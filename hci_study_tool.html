@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>CE-413 HCI Study Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0e12;
+  --s1:#12151c;
+  --s2:#181c26;
+  --s3:#1e2330;
+  --border:#252b3b;
+  --gold:#f0c060;
+  --gold2:#f5d88a;
+  --blue:#5b9cf6;
+  --teal:#4ecdc4;
+  --rose:#f06292;
+  --green:#69db7c;
+  --red:#ff6b6b;
+  --txt:#e8eaf0;
+  --dim:#7a859e;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Syne',sans-serif;min-height:100vh}
+
+/* ── NAV ── */
+#nav{
+  position:sticky;top:0;z-index:200;
+  background:rgba(12,14,18,.93);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;
+  padding:0 20px;flex-wrap:wrap;
+}
+.brand{
+  font-family:'Instrument Serif',serif;
+  font-size:17px;color:var(--gold);
+  padding:13px 0;margin-right:14px;
+  white-space:nowrap;font-style:italic;
+}
+.nb{
+  background:none;border:none;cursor:pointer;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:600;
+  color:var(--dim);padding:8px 13px;border-radius:7px;
+  transition:all .2s;white-space:nowrap;
+}
+.nb:hover{color:var(--txt);background:var(--s2)}
+.nb.on{color:var(--gold);background:rgba(240,192,96,.1)}
+
+/* ── SECTIONS ── */
+.pg{display:none;padding:36px 24px;max-width:1080px;margin:0 auto;animation:fadeIn .3s ease}
+.pg.on{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── HERO ── */
+#home{text-align:center;padding:56px 24px}
+.eye{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+  margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Instrument Serif',serif;
+  font-size:clamp(38px,7vw,82px);line-height:1;
+  font-style:italic;margin-bottom:20px;
+}
+.hero-title span{color:var(--gold)}
+.hero-sub{font-size:15px;color:var(--dim);max-width:460px;margin:0 auto 48px;line-height:1.7;font-weight:400}
+.stat-row{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:48px}
+.stat .n{
+  font-family:'Instrument Serif',serif;
+  font-size:48px;color:var(--gold);font-style:italic;display:block;line-height:1
+}
+.stat .l{font-size:12px;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;max-width:900px;margin:0 auto}
+.mod-card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:24px 20px;
+  cursor:pointer;transition:all .25s;text-align:left;
+}
+.mod-card:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.5)}
+.mod-icon{font-size:26px;margin-bottom:12px;display:block}
+.mod-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.mod-desc{font-size:12px;color:var(--dim);line-height:1.5}
+
+/* ── SHARED ── */
+.sec-head{margin-bottom:32px}
+.sec-title{font-family:'Instrument Serif',serif;font-size:32px;font-style:italic;margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--dim)}
+
+.tag{
+  display:inline-block;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:1.5px;text-transform:uppercase;
+  padding:3px 10px;border-radius:20px;
+}
+.tag-gold{background:rgba(240,192,96,.15);color:var(--gold)}
+.tag-blue{background:rgba(91,156,246,.15);color:var(--blue)}
+.tag-teal{background:rgba(78,205,196,.15);color:var(--teal)}
+.tag-rose{background:rgba(240,98,146,.15);color:var(--rose)}
+.tag-green{background:rgba(105,219,124,.15);color:var(--green)}
+
+/* ── DEFINITIONS ── */
+.search-wrap{position:relative;margin-bottom:24px}
+.search-wrap input{
+  width:100%;background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:13px 18px 13px 44px;
+  color:var(--txt);font-family:'Syne',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s;
+}
+.search-wrap input:focus{border-color:var(--gold)}
+.search-wrap::before{
+  content:'⌕';position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  color:var(--dim);font-size:18px;pointer-events:none;
+}
+.def-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.flt{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--dim);border-radius:20px;padding:5px 14px;
+  cursor:pointer;font-size:12px;font-weight:600;
+  font-family:'Syne',sans-serif;transition:all .2s;
+}
+.flt.on{background:rgba(240,192,96,.15);border-color:var(--gold);color:var(--gold)}
+.def-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.def-card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px;transition:border-color .2s;
+}
+.def-card:hover{border-color:rgba(240,192,96,.3)}
+.def-term{
+  font-family:'Instrument Serif',serif;
+  font-size:18px;font-style:italic;
+  color:var(--gold);margin-bottom:6px;margin-top:8px;
+}
+.def-body{font-size:13px;line-height:1.7;color:var(--dim);font-weight:400}
+.def-body strong{color:var(--txt);font-weight:700}
+
+/* ── FLASHCARDS ── */
+.fc-controls{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.fc-cnt{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--dim);min-width:70px;text-align:center}
+.btn{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--txt);border-radius:8px;padding:10px 20px;
+  cursor:pointer;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  transition:all .2s;
+}
+.btn:hover{border-color:var(--gold);color:var(--gold)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn-primary{background:var(--gold);color:#0c0e12;border-color:var(--gold)}
+.btn-primary:hover{background:var(--gold2);border-color:var(--gold2);color:#0c0e12;box-shadow:0 6px 20px rgba(240,192,96,.35)}
+
+.prog-wrap{max-width:620px;margin:0 auto 20px;background:var(--s2);border-radius:4px;height:3px}
+.prog-fill{height:3px;border-radius:4px;background:linear-gradient(90deg,var(--gold),var(--blue));transition:width .4s ease}
+
+.fc-scene{width:100%;max-width:620px;margin:0 auto;height:300px;cursor:pointer;perspective:1200px}
+.fc-inner{
+  width:100%;height:100%;position:relative;
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);
+}
+.fc-inner.flipped{transform:rotateY(180deg)}
+.fc-face{
+  position:absolute;inset:0;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:var(--r);
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:36px;text-align:center;
+}
+.fc-front{background:var(--s1);border:1px solid var(--border)}
+.fc-back{
+  background:linear-gradient(135deg,#161c2c,#12151c);
+  border:1px solid rgba(240,192,96,.35);
+  transform:rotateY(180deg);
+}
+.fc-label{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  text-transform:uppercase;letter-spacing:2px;
+  color:var(--gold);margin-bottom:16px;
+  background:rgba(240,192,96,.1);padding:4px 12px;border-radius:20px;
+}
+.fc-q{font-family:'Instrument Serif',serif;font-size:24px;font-style:italic;line-height:1.3;color:var(--txt)}
+.fc-a{font-size:14px;line-height:1.8;color:var(--txt);font-weight:400}
+.fc-hint{font-size:12px;color:var(--dim);margin-top:14px}
+.fc-shuffle{display:flex;justify-content:center;margin-top:16px}
+.fc-cat-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
+
+/* ── TOPICS ── */
+.topic-list{display:flex;flex-direction:column;gap:10px}
+.topic-item{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;transition:border-color .2s;
+}
+.topic-item:hover{border-color:rgba(240,192,96,.25)}
+.topic-header{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 22px;cursor:pointer;
+  transition:background .2s;
+}
+.topic-header:hover{background:var(--s2)}
+.topic-icon{font-size:20px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--s2);border-radius:8px;flex-shrink:0}
+.topic-title{font-size:15px;font-weight:700;flex:1}
+.topic-chevron{color:var(--dim);transition:transform .3s;font-size:18px;flex-shrink:0}
+.topic-item.open .topic-chevron{transform:rotate(180deg)}
+.topic-body{
+  padding:0 22px 0;max-height:0;overflow:hidden;
+  transition:max-height .4s ease,padding .4s ease;
+}
+.topic-item.open .topic-body{padding:0 22px 22px;max-height:2000px}
+.topic-body h4{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  text-transform:uppercase;letter-spacing:2px;
+  color:var(--gold);margin:18px 0 8px;
+}
+.topic-body h4:first-child{margin-top:8px}
+.topic-body p{font-size:13px;line-height:1.8;color:var(--dim);margin-bottom:10px;font-weight:400}
+.topic-body p strong{color:var(--txt);font-weight:700}
+.topic-body ul{padding-left:18px}
+.topic-body li{font-size:13px;line-height:1.8;color:var(--dim);margin-bottom:5px;font-weight:400}
+.topic-body li strong{color:var(--txt);font-weight:700}
+.formula-box{
+  background:var(--s3);border:1px solid var(--border);
+  border-left:3px solid var(--gold);
+  border-radius:0 8px 8px 0;
+  padding:12px 16px;margin:12px 0;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--gold2);
+}
+.table-wrap{overflow-x:auto;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:var(--s3);padding:10px 14px;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--dim);border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--dim);font-weight:400;line-height:1.5}
+tr:last-child td{border-bottom:none}
+
+/* ── SOLVED EXAMS ── */
+.exam-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
+.etab{
+  background:var(--s2);border:1px solid var(--border);
+  color:var(--dim);border-radius:8px;padding:10px 20px;
+  cursor:pointer;font-size:13px;font-weight:700;
+  font-family:'Syne',sans-serif;transition:all .2s;
+}
+.etab.on{background:rgba(240,192,96,.15);border-color:var(--gold);color:var(--gold)}
+.exam-content{display:none}
+.exam-content.on{display:block}
+
+.q-block{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);margin-bottom:14px;overflow:hidden;
+}
+.q-head{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:18px 22px;cursor:pointer;transition:background .2s;
+}
+.q-head:hover{background:var(--s2)}
+.q-num{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:rgba(240,192,96,.15);color:var(--gold);
+  border-radius:6px;padding:4px 10px;flex-shrink:0;white-space:nowrap;margin-top:1px;
+}
+.q-pts{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:rgba(91,156,246,.15);color:var(--blue);
+  border-radius:6px;padding:4px 10px;flex-shrink:0;white-space:nowrap;margin-left:auto;margin-top:1px;
+}
+.q-text{font-size:14px;font-weight:700;line-height:1.5;flex:1}
+.q-chev{color:var(--dim);transition:transform .3s;font-size:16px;flex-shrink:0;margin-top:3px}
+.q-block.open .q-chev{transform:rotate(180deg)}
+.q-body{
+  padding:0 22px;max-height:0;overflow:hidden;
+  transition:max-height .4s ease,padding .4s ease;
+  border-top:0px solid var(--border);
+}
+.q-block.open .q-body{padding:4px 22px 22px;max-height:3000px;border-top-width:1px}
+.q-body h4{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  text-transform:uppercase;letter-spacing:2px;
+  color:var(--teal);margin:16px 0 8px;
+}
+.q-body h4:first-child{margin-top:12px}
+.q-body p{font-size:13px;line-height:1.8;color:var(--dim);margin-bottom:10px;font-weight:400}
+.q-body p strong{color:var(--txt);font-weight:700}
+.q-body ul{padding-left:18px;margin-bottom:10px}
+.q-body li{font-size:13px;line-height:1.8;color:var(--dim);margin-bottom:5px;font-weight:400}
+.q-body li strong{color:var(--txt);font-weight:700}
+.model-badge{
+  display:inline-block;
+  background:rgba(105,219,124,.12);color:var(--green);
+  border-radius:6px;padding:3px 10px;
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  margin-bottom:10px;letter-spacing:.5px;
+}
+
+/* ── MOCK EXAM ── */
+.mock-wrap{max-width:720px;margin:0 auto}
+.mock-timer{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:14px 20px;margin-bottom:24px;flex-wrap:wrap;gap:10px;
+}
+.timer-val{
+  font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--gold);
+}
+.timer-label{font-size:12px;color:var(--dim)}
+.mock-prog{flex:1;min-width:200px}
+.mock-prog-bar{background:var(--s2);border-radius:4px;height:6px;margin-top:8px}
+.mock-prog-fill{height:6px;border-radius:4px;background:linear-gradient(90deg,var(--teal),var(--blue));transition:width .3s}
+
+.mq-card{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:var(--r);padding:28px;margin-bottom:18px;
+}
+.mq-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.mq-n{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  background:rgba(240,192,96,.15);color:var(--gold);
+  border-radius:6px;padding:4px 12px;flex-shrink:0;
+}
+.mq-q{font-size:15px;font-weight:700;line-height:1.5}
+.mq-opts{display:flex;flex-direction:column;gap:9px}
+.mq-opt{
+  background:var(--s2);border:1px solid var(--border);
+  border-radius:8px;padding:13px 16px;cursor:pointer;
+  font-size:13px;transition:all .2s;text-align:left;
+  font-family:'Syne',sans-serif;display:flex;align-items:center;gap:12px;
+  font-weight:500;
+}
+.mq-opt:hover:not(.locked){border-color:var(--blue);color:var(--blue)}
+.mq-opt.correct{background:rgba(105,219,124,.1);border-color:var(--green);color:var(--green)}
+.mq-opt.wrong{background:rgba(255,107,107,.1);border-color:var(--red);color:var(--red)}
+.mq-opt.reveal{background:rgba(105,219,124,.06);border-color:rgba(105,219,124,.3);color:rgba(105,219,124,.7)}
+.opt-letter{
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--border);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-weight:700;
+}
+.mq-explain{
+  margin-top:14px;padding:14px;border-radius:8px;
+  font-size:13px;line-height:1.7;font-weight:400;
+  background:rgba(91,156,246,.08);border:1px solid rgba(91,156,246,.2);
+  color:var(--dim);display:none;
+}
+.mq-explain.show{display:block}
+.mock-actions{display:flex;justify-content:space-between;align-items:center;margin-top:24px;flex-wrap:wrap;gap:12px}
+
+.results-wrap{text-align:center;padding:56px 32px;animation:fadeIn .5s ease}
+.res-ring{
+  width:140px;height:140px;border-radius:50%;
+  margin:0 auto 28px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:3px solid var(--gold);
+  background:radial-gradient(circle,rgba(240,192,96,.08),transparent);
+}
+.res-pct{font-family:'Instrument Serif',serif;font-size:50px;color:var(--gold);font-style:italic;line-height:1}
+.res-lbl{font-size:12px;color:var(--dim);margin-top:4px}
+.res-title{font-family:'Instrument Serif',serif;font-size:32px;font-style:italic;margin-bottom:10px}
+.res-sub{font-size:14px;color:var(--dim);margin-bottom:32px}
+.review-list{text-align:left;max-width:600px;margin:0 auto}
+.review-item{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:12px 0;border-bottom:1px solid var(--border);font-size:13px;line-height:1.6;font-weight:400;
+}
+.ri-icon{font-size:15px;flex-shrink:0;margin-top:2px}
+.ri-wrong{color:var(--red)}
+.ri-right{color:var(--green)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--dim)}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="brand">CE-413 · HCI</div>
+  <button class="nb on" onclick="show('home')">🏠 Home</button>
+  <button class="nb" onclick="show('topics')">📖 Topics</button>
+  <button class="nb" onclick="show('defs')">📚 Definitions</button>
+  <button class="nb" onclick="show('flash')">🃏 Flashcards</button>
+  <button class="nb" onclick="show('exams')">📝 Solved Exams</button>
+  <button class="nb" onclick="show('mock')">⏱ Mock Exam</button>
+</nav>
+
+<!-- ══════════════════════════════════════════
+     HOME
+══════════════════════════════════════════ -->
+<div id="home" class="pg on">
+  <div class="eye">CE-413 · Human Computer Interface · Exam Prep</div>
+  <h1 class="hero-title">Master <span>HCI</span><br/>Before Tomorrow</h1>
+  <p class="hero-sub">All 3 lectures, 2 solved past exams, flashcards, definitions & a timed mock exam — everything you need for Dr. Domazet's midterm.</p>
+  <div class="stat-row">
+    <div class="stat"><span class="n">40+</span><span class="l">Flashcards</span></div>
+    <div class="stat"><span class="n">60+</span><span class="l">Definitions</span></div>
+    <div class="stat"><span class="n">2</span><span class="l">Solved Exams</span></div>
+    <div class="stat"><span class="n">25</span><span class="l">Mock Questions</span></div>
+  </div>
+  <div class="module-grid">
+    <div class="mod-card" onclick="show('topics')">
+      <span class="mod-icon">📖</span>
+      <div class="mod-title">Topics</div>
+      <div class="mod-desc">9 core topics with full explanations, tables & formulas</div>
+    </div>
+    <div class="mod-card" onclick="show('defs')">
+      <span class="mod-icon">📚</span>
+      <div class="mod-title">Definitions</div>
+      <div class="mod-desc">Searchable glossary of every key term from all lectures</div>
+    </div>
+    <div class="mod-card" onclick="show('flash')">
+      <span class="mod-icon">🃏</span>
+      <div class="mod-title">Flashcards</div>
+      <div class="mod-desc">Flip cards to test your memory on all major concepts</div>
+    </div>
+    <div class="mod-card" onclick="show('exams')">
+      <span class="mod-icon">📝</span>
+      <div class="mod-title">Solved Exams</div>
+      <div class="mod-desc">Full model answers for 2024 & 2025 midterms</div>
+    </div>
+    <div class="mod-card" onclick="show('mock')">
+      <span class="mod-icon">⏱</span>
+      <div class="mod-title">Mock Exam</div>
+      <div class="mod-desc">25 multiple-choice questions with instant feedback</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     TOPICS
+══════════════════════════════════════════ -->
+<div id="topics" class="pg">
+  <div class="sec-head">
+    <h2 class="sec-title">Core Topics</h2>
+    <p class="sec-sub">Click any topic to expand the full explanation. These are the exact areas tested every year.</p>
+  </div>
+  <div class="topic-list" id="topicList"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     DEFINITIONS
+══════════════════════════════════════════ -->
+<div id="defs" class="pg">
+  <div class="sec-head">
+    <h2 class="sec-title">Definitions Glossary</h2>
+    <p class="sec-sub">Every key term from Lectures 1, 5 and 6. Search or filter by category.</p>
+  </div>
+  <div class="search-wrap"><input id="defSearch" type="text" placeholder="Search terms..." oninput="filterDefs()"/></div>
+  <div class="def-filters" id="defFilters"></div>
+  <div class="def-grid" id="defGrid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     FLASHCARDS
+══════════════════════════════════════════ -->
+<div id="flash" class="pg">
+  <div class="sec-head">
+    <h2 class="sec-title">Flashcards</h2>
+    <p class="sec-sub">Click a card to flip it. Navigate with arrows or keyboard ← →. Press Space to flip.</p>
+  </div>
+  <div class="fc-cat-row" id="fcCats"></div>
+  <div class="prog-wrap"><div class="prog-fill" id="fcProg" style="width:0%"></div></div>
+  <div class="fc-controls">
+    <button class="btn" id="fcPrev" onclick="fcNav(-1)">← Prev</button>
+    <span class="fc-cnt" id="fcCnt">1 / 40</span>
+    <button class="btn" id="fcNext" onclick="fcNav(1)">Next →</button>
+  </div>
+  <div class="fc-scene" onclick="fcFlip()">
+    <div class="fc-inner" id="fcInner">
+      <div class="fc-face fc-front" id="fcFront">
+        <div class="fc-label" id="fcTag">Category</div>
+        <div class="fc-q" id="fcQ">Loading...</div>
+        <div class="fc-hint">Click to reveal answer</div>
+      </div>
+      <div class="fc-face fc-back" id="fcBack">
+        <div class="fc-label" style="background:rgba(240,192,96,.2)">Answer</div>
+        <div class="fc-a" id="fcA">Loading...</div>
+      </div>
+    </div>
+  </div>
+  <div class="fc-shuffle"><button class="btn" onclick="fcShuffle()" style="margin-top:16px">🔀 Shuffle Deck</button></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     SOLVED EXAMS
+══════════════════════════════════════════ -->
+<div id="exams" class="pg">
+  <div class="sec-head">
+    <h2 class="sec-title">Solved Past Exams</h2>
+    <p class="sec-sub">Full model answers for every question. Click a question to expand the answer.</p>
+  </div>
+  <div class="exam-tabs">
+    <button class="etab on" onclick="switchExam(0,this)">📄 2025 Midterm (Apr 7)</button>
+    <button class="etab" onclick="switchExam(1,this)">📄 2024 Midterm (Apr 15)</button>
+  </div>
+  <div id="examContents"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     MOCK EXAM
+══════════════════════════════════════════ -->
+<div id="mock" class="pg">
+  <div class="sec-head">
+    <h2 class="sec-title">Mock Exam</h2>
+    <p class="sec-sub">25 multiple-choice questions. Select an answer to see instant feedback and explanation.</p>
+  </div>
+  <div class="mock-wrap">
+    <div id="mockIntro">
+      <div style="background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:32px;text-align:center;margin-bottom:24px">
+        <div style="font-size:48px;margin-bottom:16px">⏱</div>
+        <h3 style="font-family:'Instrument Serif',serif;font-size:24px;font-style:italic;margin-bottom:8px">25 Questions · No Time Limit</h3>
+        <p style="font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:24px">Covers all topics: The Human, Design Principles, Usability, HCI Paradigms, Evaluation, User Support & more. Each question shows the correct answer and explanation immediately.</p>
+        <button class="btn btn-primary" onclick="startMock()">Start Mock Exam →</button>
+      </div>
+    </div>
+    <div id="mockQuestions" style="display:none"></div>
+    <div id="mockResults" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════ */
+function show(id){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.querySelectorAll('.nb').forEach(b=>{
+    if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('on');
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══════════════════════════════════════════
+   DEFINITIONS DATA
+═══════════════════════════════════════════ */
+const DEFS=[
+  // THE HUMAN
+  {cat:"The Human",term:"Visual Acuity",def:"The ability to perceive fine detail. Limited and decreases with distance. Increases with luminance but <strong>blue acuity is the lowest</strong> of all colours — never use blue for small important details."},
+  {cat:"The Human",term:"Retinal Rods & Cones",def:"<strong>Rods</strong> are used for low-light vision and detect brightness. <strong>Cones</strong> are used for colour vision. 8% of males and 1% of females are colour-blind, which affects interface colour choices."},
+  {cat:"The Human",term:"Iconic Memory",def:"Sensory memory buffer for <strong>visual</strong> stimuli. Ultra-short persistence (fraction of a second). Example: the afterimage trail of a sparkler. Continuously overwritten by new input."},
+  {cat:"The Human",term:"Echoic Memory",def:"Sensory memory buffer for <strong>auditory</strong> stimuli. Persists slightly longer than iconic memory. Example: the perception of stereo sound coming from different directions simultaneously."},
+  {cat:"The Human",term:"Short-Term Memory (STM)",def:"The brain's working scratch-pad. Key properties: rapid access (~70ms), rapid decay (~200ms), and <strong>limited capacity of 7±2 chunks</strong> (Miller's Law). Chunking helps — e.g. phone numbers split into groups."},
+  {cat:"The Human",term:"Long-Term Memory (LTM)",def:"Near-unlimited capacity repository for all knowledge. Slow access (~1/10 second), very slow decay. Two types: <strong>Episodic</strong> (serial memory of life events) and <strong>Semantic</strong> (facts, concepts, skills — derived from episodic over time)."},
+  {cat:"The Human",term:"Semantic Network",def:"A model of LTM where knowledge is organised as a network of nodes and relationships. Supports <strong>inheritance</strong> (child nodes inherit parent properties) and <strong>inference</strong>. Example: COLLIE inherits properties from DOG."},
+  {cat:"The Human",term:"Frame (Knowledge Structure)",def:"Information organised in data structures with <strong>slots</strong> filled by values for a specific instance. Has Fixed (always true), Default (usually true) and Variable (context-dependent) slots. Example: the DOG frame with slots for legs, diet, sound."},
+  {cat:"The Human",term:"Production Rules",def:"Representation of procedural knowledge as condition/action pairs. <strong>IF</strong> condition is matched <strong>THEN</strong> use rule. Example: IF dog is growling THEN run away."},
+  {cat:"The Human",term:"Deductive Reasoning",def:"Deriving a logically necessary conclusion from given premises. Valid even if factually false. Example: 'If it is raining the ground is dry; it is raining; therefore the ground is dry' — logically valid but factually wrong."},
+  {cat:"The Human",term:"Inductive Reasoning",def:"Generalising from cases seen to cases unseen. Unreliable (can only prove false, not true) but extremely useful. Humans are poor at using negative evidence — see Wason's Card Problem."},
+  {cat:"The Human",term:"Abductive Reasoning",def:"Reasoning from an event back to its most likely cause. Example: 'Sam drives fast when drunk; Sam is driving fast; therefore Sam is probably drunk.' Unreliable — can lead to false explanations."},
+  {cat:"The Human",term:"Slips",def:"<strong>Right intention, wrong execution.</strong> Caused by poor physical skill, inattention, or a change to a habitual action. Example: typing a frequently used password on the wrong website by habit."},
+  {cat:"The Human",term:"Mistakes",def:"<strong>Wrong intention</strong> due to an incorrect understanding or mental model of the system. The user does exactly what they meant to, but their mental model is wrong. More serious than slips."},
+  {cat:"The Human",term:"Affect (Emotion)",def:"The biological response to stimuli. <strong>Positive affect</strong> → creative problem solving. <strong>Negative affect</strong> → narrow thinking. Implication: aesthetically pleasing interfaces increase positive affect and improve performance (Donald Norman)."},
+  {cat:"The Human",term:"Fitts' Law",def:"<strong>Mt = a + b·log₂(D/S + 1)</strong>. Movement time depends on Distance (D) and Size (S) of target. Design implication: make targets as <strong>large as possible</strong> and distances as <strong>small as possible</strong>."},
+  {cat:"The Human",term:"Reaction Time",def:"Time taken to respond to a stimulus. Visual ~200ms, Auditory ~150ms, Pain ~700ms. Increasing reaction time decreases accuracy in unskilled operators but <strong>not</strong> in skilled ones."},
+  {cat:"The Human",term:"Kinesthesis",def:"Awareness of body position in space. Affects comfort and performance during interaction. Important for physical interface design (e.g. ergonomics of a keyboard or mouse position)."},
+
+  // DESIGN PRINCIPLES
+  {cat:"Design Principles",term:"Learnability",def:"The ease with which <strong>new users</strong> can begin effective interaction and achieve maximal performance. Sub-principles: Predictability, Synthesizability, Familiarity, Generalizability, Consistency."},
+  {cat:"Design Principles",term:"Flexibility",def:"The <strong>multiplicity of ways</strong> the user and system can exchange information. Sub-principles: Dialogue Initiative, Multithreading, Task Migratability, Substitutivity, Customizability."},
+  {cat:"Design Principles",term:"Robustness",def:"The level of <strong>support</strong> provided to users in successfully achieving and assessing goal-directed behaviour. Sub-principles: Observability, Recoverability, Responsiveness, Task Conformance."},
+  {cat:"Design Principles",term:"Predictability",def:"Sub-principle of Learnability. The ability to determine the <strong>effect of future actions</strong> based on past interaction history. Related to 'operation visibility'."},
+  {cat:"Design Principles",term:"Synthesizability",def:"Sub-principle of Learnability. The ability to <strong>assess the effect of past actions</strong>. Immediate vs. eventual honesty — does the system show you what happened and when?"},
+  {cat:"Design Principles",term:"Familiarity",def:"Sub-principle of Learnability. How <strong>prior knowledge</strong> applies to a new system. Related to guessability and affordance — does the interface suggest its own use?"},
+  {cat:"Design Principles",term:"Consistency",def:"Sub-principle of Learnability. <strong>Likeness in input/output behaviour</strong> arising from similar situations or task objectives. The most cited and most important usability principle."},
+  {cat:"Design Principles",term:"Dialogue Initiative",def:"Sub-principle of Flexibility. <strong>Freedom from system-imposed constraints</strong> on input dialogue. Contrast: system pre-emptive (system controls flow) vs. user pre-emptive (user controls flow)."},
+  {cat:"Design Principles",term:"Task Migratability",def:"Sub-principle of Flexibility. The ability to <strong>pass responsibility</strong> for task execution between user and system. Example: autocomplete — user can accept system suggestion or override."},
+  {cat:"Design Principles",term:"Customizability",def:"Sub-principle of Flexibility. Modifiability of the user interface. <strong>Adaptability</strong> = user modifies it. <strong>Adaptivity</strong> = system adapts automatically to the user."},
+  {cat:"Design Principles",term:"Observability",def:"Sub-principle of Robustness. Ability of user to <strong>evaluate the internal state</strong> of the system from its perceivable representation. Related to visibility, browsability, defaults."},
+  {cat:"Design Principles",term:"Recoverability",def:"Sub-principle of Robustness. Ability of user to <strong>take corrective action</strong> once an error has been recognised. Includes forward recovery and backward recovery (undo)."},
+
+  // DESIGN RULES
+  {cat:"Design Rules",term:"Standards",def:"Set by national or international bodies (e.g. <strong>ISO 9241</strong>) to ensure compliance across a large community of designers. High authority, limited application. Hardware standards more common than software standards."},
+  {cat:"Design Rules",term:"ISO 9241",def:"International standard defining usability as: <strong>Effectiveness</strong> (can users achieve goals?), <strong>Efficiency</strong> (without wasting effort?), and <strong>Satisfaction</strong> (do they enjoy it?)."},
+  {cat:"Design Rules",term:"Guidelines",def:"More suggestive and general than standards. Lower authority but broader application. <strong>Abstract guidelines (principles)</strong> apply during early lifecycle. <strong>Detailed guidelines (style guides)</strong> apply during later lifecycle."},
+  {cat:"Design Rules",term:"Heuristic Evaluation",def:"Proposed by Nielsen & Molich. Usability criteria (heuristics) are identified; design is examined by experts to see if any are violated. Examples: system behaviour is predictable, consistent, provides feedback. 'Debugs' the design."},
+  {cat:"Design Rules",term:"Shneiderman's 8 Golden Rules",def:"(1) Strive for consistency (2) Enable shortcuts for frequent users (3) Offer informative feedback (4) Design dialogs for closure (5) Prevent errors (6) Permit easy reversal (7) Support internal locus of control (8) Reduce STM load."},
+  {cat:"Design Rules",term:"Norman's 7 Principles",def:"(1) Use knowledge in world AND head (2) Simplify task structure (3) Make things visible (4) Get mappings right (5) Exploit constraints (6) Design for error (7) Standardize when all else fails."},
+  {cat:"Design Rules",term:"Design Patterns",def:"An <strong>invariant solution to a recurrent problem</strong> within a specific context. Originated in architecture (Alexander). HCI example: 'Go back to a safe place'. Patterns exist in languages linking to complete designs."},
+
+  // HCI PROCESS
+  {cat:"HCI Process",term:"Waterfall Model",def:"Traditional sequential software lifecycle: Requirements → Architectural Design → Detailed Design → Coding → Integration & Testing → Operation & Maintenance. In HCI this is <strong>not linear</strong> — constant feedback loops are essential."},
+  {cat:"HCI Process",term:"Usability Engineering",def:"Making specific usability measures <strong>explicit as requirements</strong>. Each attribute has: measuring concept, measuring method, now/worst/planned/best case levels. Problems: requires detail not available early in design."},
+  {cat:"HCI Process",term:"Iterative Design",def:"Overcomes problems of incomplete requirements. Uses prototypes (throw-away, incremental, evolutionary) to simulate system features. Warning: design inertia means early bad decisions can persist through iterations."},
+  {cat:"HCI Process",term:"Prototype (Throw-away)",def:"A prototype built to explore design options and then <strong>discarded</strong>. Purpose is to clarify requirements before building the real system. Examples: storyboards, paper mockups, Wizard of Oz."},
+  {cat:"HCI Process",term:"Wizard of Oz",def:"A prototyping technique where a <strong>human simulates</strong> system responses behind the scenes while a user interacts with what they believe is an automated system. Useful for testing early interaction concepts."},
+  {cat:"HCI Process",term:"Design Rationale (IBIS)",def:"<strong>Issue-Based Information System</strong>. Process-oriented design rationale. Elements: <strong>Issues</strong> (hierarchical root issue), <strong>Positions</strong> (potential resolutions), <strong>Arguments</strong> (modify position-issue relationships). gIBIS is graphical version."},
+  {cat:"HCI Process",term:"Design Rationale (QOC)",def:"<strong>Questions, Options, Criteria</strong>. Structure-oriented design rationale. Questions represent major design issues. Options provide alternative solutions. Criteria are means to assess the options and make a choice."},
+  {cat:"HCI Process",term:"HCI Paradigms",def:"Shifts in dominant interaction model: <strong>Batch → Command Line → WIMP/Desktop → Direct Manipulation → Web → Mobile/Touch → AI/XR</strong>. Each shift changes user expectations and design strategies."},
+
+  // EVALUATION
+  {cat:"Evaluation",term:"Cognitive Walkthrough",def:"Expert evaluates design by 'walking through' tasks and asking: <strong>what impact will interaction have?</strong> What cognitive processes are required? What learning problems may occur? Proposed by Polson et al."},
+  {cat:"Evaluation",term:"Think Aloud",def:"User performs a task and <strong>narrates what they are doing and thinking</strong>. Simple, requires little expertise, provides useful insight. Disadvantages: subjective, selective, act of describing may alter task performance."},
+  {cat:"Evaluation",term:"Cooperative Evaluation",def:"Variation of think aloud where <strong>both user and evaluator can ask each other questions</strong>. Less constrained, user is encouraged to criticise the system, clarification is possible."},
+  {cat:"Evaluation",term:"Independent Variable (IV)",def:"The variable the experimenter <strong>manipulates</strong> to create different conditions. Examples: interface style, number of menu items, font size. Changed deliberately by the researcher."},
+  {cat:"Evaluation",term:"Dependent Variable (DV)",def:"The variable the experimenter <strong>measures</strong> as an outcome. Examples: time taken to complete task, number of errors made. Changes in DV are attributed to the IV."},
+  {cat:"Evaluation",term:"Within-Groups Design",def:"Each subject performs the experiment <strong>under all conditions</strong>. Advantages: fewer users needed, less variation between subjects. Disadvantage: transfer of learning between conditions is possible."},
+  {cat:"Evaluation",term:"Between-Groups Design",def:"Each subject performs <strong>under only one condition</strong>. Advantage: no transfer of learning. Disadvantages: more users required, variation between groups can bias results."},
+  {cat:"Evaluation",term:"Eye Tracking",def:"Head or desk-mounted equipment tracks eye position. <strong>Fixations</strong> (stable eye position — number/duration indicate difficulty), <strong>Saccades</strong> (rapid movement between interest points), <strong>Scan paths</strong> (optimal = straight to target with short fixation)."},
+  {cat:"Evaluation",term:"Galvanic Skin Response (GSR)",def:"Measurement of sweat gland activity to gauge <strong>emotional/physiological response</strong> to an interface. Part of physiological measurement alongside heart rate, EMG (muscle activity), EEG (brain activity)."},
+  {cat:"Evaluation",term:"Null Hypothesis",def:"States that there is <strong>no difference</strong> between experimental conditions. The aim of statistical analysis is to disprove it. Example: 'There is no change in error rate as font size decreases.'"},
+
+  // USER SUPPORT
+  {cat:"User Support",term:"Context-Sensitive Help",def:"Help request interpreted according to the <strong>context in which it occurs</strong>. Example: tooltips that explain the element under the cursor. More useful than generic help because it knows what the user is doing."},
+  {cat:"User Support",term:"Wizards (Help)",def:"Task-specific tool that <strong>leads user through a task step-by-step</strong> using their answers to specific questions. Useful for safe completion of complex or infrequent tasks. Must allow user to go back. Limited flexibility."},
+  {cat:"User Support",term:"Intelligent Help System",def:"Uses knowledge of context, individual user, task and domain to provide <strong>adapted help</strong>. Problems: large knowledge requirements, control issues. Models user via: Quantification, Stereotypes, or Overlay models."},
+  {cat:"User Support",term:"Universal Design",def:"Design that is usable by <strong>all people</strong> without need for adaptation. 7 principles: equitable use, flexibility in use, simple/intuitive, perceptible information, tolerance for error, low physical effort, size/space for use."},
+
+  // IMPLEMENTATION
+  {cat:"Implementation",term:"UIMS",def:"<strong>User Interface Management System.</strong> Adds a layer above toolkits separating application semantics from presentation. Improves portability, reusability, multiple interfaces, and customizability. Example: Visual Basic."},
+  {cat:"Implementation",term:"MVC Architecture",def:"<strong>Model-View-Controller.</strong> Model = internal logical state. View = how it is rendered on screen. Controller = processes user input. Used in Smalltalk, Java Swing. Limitation: controller needs to talk to view in graphical interfaces."},
+  {cat:"Implementation",term:"Seeheim Model",def:"UIMS conceptual architecture with three components: <strong>Presentation</strong> (handles I/O), <strong>Dialogue Control</strong> (controls interaction flow), <strong>Application Interface</strong> (connects to business logic). Introduced 'lexical/syntactic/semantic' vocabulary."},
+  {cat:"Implementation",term:"PAC Model",def:"<strong>Presentation-Abstraction-Control.</strong> Abstraction = logical state. Presentation = manages I/O. Control = mediates between them. Manages hierarchy and multiple views. Cleaner than MVC but MVC used more in practice (Java Swing)."},
+  {cat:"Implementation",term:"Event Loop",def:"Programming model where the application <strong>reads events in a loop</strong> and branches on event type. Simple but hard for non-modal dialogs. Alternative: notification/callback model where handlers are registered and called when events occur."},
+  {cat:"Implementation",term:"X Window System",def:"A windowing system using a pixel imaging model with pointing. <strong>X protocol</strong> defines server-client communication. A separate window manager client enforces policies for input focus, window layout, and inter-client data transfer."},
+];
+
+let defCat='All';
+function initDefs(){
+  const cats=['All',...new Set(DEFS.map(d=>d.cat))];
+  const fDiv=document.getElementById('defFilters');
+  cats.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='flt'+(c==='All'?' on':'');
+    b.textContent=c;
+    b.onclick=()=>{defCat=c;document.querySelectorAll('.flt').forEach(x=>x.classList.remove('on'));b.classList.add('on');filterDefs();};
+    fDiv.appendChild(b);
+  });
+  filterDefs();
+}
+function filterDefs(){
+  const q=(document.getElementById('defSearch').value||'').toLowerCase();
+  const g=document.getElementById('defGrid');g.innerHTML='';
+  const catColors={
+    'The Human':'tag-gold','Design Principles':'tag-blue','Design Rules':'tag-teal',
+    'HCI Process':'tag-rose','Evaluation':'tag-green','User Support':'tag-gold','Implementation':'tag-blue'
+  };
+  DEFS.filter(d=>(defCat==='All'||d.cat===defCat)&&(!q||d.term.toLowerCase().includes(q)||d.def.toLowerCase().includes(q))).forEach(d=>{
+    const tc=catColors[d.cat]||'tag-gold';
+    g.innerHTML+=`<div class="def-card"><span class="tag ${tc}">${d.cat}</span><div class="def-term">${d.term}</div><div class="def-body">${d.def}</div></div>`;
+  });
+}
+
+/* ═══════════════════════════════════════════
+   TOPICS DATA
+═══════════════════════════════════════════ */
+const TOPICS=[
+  {icon:"👁️",title:"The Human — Perception & Senses",color:"var(--gold)",body:`
+    <h4>Vision — The Primary Channel</h4>
+    <p>Vision works in two stages: <strong>physical reception</strong> of light (via retina) and <strong>processing/interpretation</strong> by the brain. The retina contains <strong>rods</strong> (low-light, black/white) and <strong>cones</strong> (colour). Ganglion cells detect patterns and movement at the neural level.</p>
+    <p><strong>Visual Angle</strong> indicates how much of the field of view an object occupies — it relates to both the object's size and its distance from the eye. <strong>Visual acuity</strong> (ability to perceive detail) is limited and increases with luminance. Importantly, <strong>blue acuity is the lowest</strong> — never use blue for critical small text or details in an interface.</p>
+    <p><strong>Colour</strong> has three dimensions: <strong>Hue</strong> (wavelength — red, green, blue), <strong>Intensity</strong> (amount of light), and <strong>Saturation</strong> (purity). 8% of males and 1% of females are colour-blind — designs must never rely on colour alone to convey information.</p>
+    <p>The visual system compensates for movement and luminance changes, which can cause <strong>optical illusions</strong> (Ponzo illusion, Müller-Lyer illusion) when the compensation over-corrects.</p>
+    <h4>Reading</h4>
+    <p>Reading involves <strong>saccades</strong> (rapid eye jumps) and <strong>fixations</strong> (brief pauses where perception occurs). Word shape aids recognition — degrading word shape slows reading. <strong>Negative contrast</strong> (dark text on light background or vice versa) improves reading from computer screens.</p>
+    <h4>Hearing</h4>
+    <p>Human hearing range: <strong>20Hz to 15kHz</strong>. Less accurate at distinguishing high frequencies. The auditory system can filter and attend to specific sounds over background noise — the <strong>cocktail party phenomenon</strong>.</p>
+    <h4>Touch / Haptics</h4>
+    <p>Receptors in the skin include: <strong>thermoreceptors</strong> (heat/cold), <strong>nociceptors</strong> (pain), <strong>mechanoreceptors</strong> (pressure). Some give instant response, some continuous. Fingertips are especially sensitive. <strong>Kinesthesis</strong> = awareness of body position — affects comfort and performance at workstations.</p>
+  `},
+  {icon:"🧠",title:"The Human — Memory & Cognition",color:"var(--blue)",body:`
+    <h4>Three Types of Memory</h4>
+    <div class="table-wrap"><table>
+      <tr><th>Type</th><th>Access Speed</th><th>Decay</th><th>Capacity</th></tr>
+      <tr><td>Sensory (Iconic/Echoic/Haptic)</td><td>Instant</td><td>Continuous</td><td>Unlimited (overwritten)</td></tr>
+      <tr><td>Short-Term (STM / Working)</td><td>~70ms</td><td>~200ms</td><td><strong>7 ± 2 chunks</strong></td></tr>
+      <tr><td>Long-Term (LTM)</td><td>~1/10 sec</td><td>Very slow</td><td>Huge / unlimited</td></tr>
+    </table></div>
+    <h4>Chunking (STM Optimization)</h4>
+    <p>A <strong>chunk</strong> is a meaningful unit of information. Grouping information into familiar chunks frees STM capacity. This is why phone numbers are written as 0121-414-2626 rather than 01214142626, and why expert chess players can memorise board positions (they see patterns, not individual pieces).</p>
+    <h4>Long-Term Memory Structure</h4>
+    <p>LTM has two forms: <strong>Episodic</strong> (serial memory of events — what you did last Tuesday) and <strong>Semantic</strong> (structured memory of facts, concepts, skills — derived from episodic over time). Semantic LTM is modelled as a <strong>semantic network</strong> where nodes inherit properties from parent nodes and relationships support inference.</p>
+    <h4>Reasoning Types</h4>
+    <p><strong>Deduction:</strong> Logically necessary conclusion from premises. Logically valid but not necessarily factually true. <strong>Induction:</strong> Generalising from observed to unobserved cases — unreliable but useful. <strong>Abduction:</strong> Reasoning from event to cause — also unreliable.</p>
+    <h4>Problem Solving</h4>
+    <p><strong>Problem Space Theory</strong>: A problem comprises states; solving it means generating new states using legal operators. Heuristics like <strong>means-ends analysis</strong> guide operator selection. All problem solving is constrained by STM limits. <strong>Analogical mapping</strong> applies knowledge from a known domain to a novel problem in a new domain.</p>
+    <h4>Errors: Slips vs. Mistakes</h4>
+    <p><strong>Slips</strong> = right intention, wrong execution (inattention, poor skill). <strong>Mistakes</strong> = wrong intention due to incorrect mental model. Both types must be addressed by design — slips by better affordance, mistakes by better feedback and recovery.</p>
+  `},
+  {icon:"🖥️",title:"The Computer — I/O & Implementation",color:"var(--teal)",body:`
+    <h4>Fitts' Law</h4>
+    <div class="formula-box">Mt = a + b · log₂(D/S + 1)</div>
+    <p>Where <strong>Mt</strong> = movement time, <strong>D</strong> = distance to target, <strong>S</strong> = size of target, and a, b are empirical constants. Implication: make targets as <strong>large as possible</strong> and distances as <strong>small as possible</strong>. This is why macOS puts the menu bar at the top screen edge (infinite height) and why pie menus are faster than linear menus.</p>
+    <h4>Reaction Times</h4>
+    <div class="table-wrap"><table>
+      <tr><th>Stimulus Type</th><th>Reaction Time</th></tr>
+      <tr><td>Visual</td><td>~200ms</td></tr>
+      <tr><td>Auditory</td><td>~150ms</td></tr>
+      <tr><td>Pain</td><td>~700ms</td></tr>
+    </table></div>
+    <h4>Software Architecture Levels</h4>
+    <p><strong>Windowing systems</strong> provide device independence and resource sharing (multiple tasks). Examples: X Window System. <strong>Interaction toolkits</strong> provide programming-level widgets (buttons, menus, sliders) — Java AWT, Swing. <strong>UIMS</strong> add separation between presentation and application logic, improving portability, reusability and customizability.</p>
+    <h4>MVC vs. PAC</h4>
+    <p><strong>MVC (Model-View-Controller)</strong>: Model = logical state, View = rendering, Controller = input processing. Limitation: controller needs to communicate with view in graphical interfaces, so separation isn't complete. Used in Java Swing. <strong>PAC</strong>: Abstraction-Presentation-Control. Cleaner conceptually, manages hierarchies better, but MVC is more widely used in practice.</p>
+    <h4>Seeheim Model</h4>
+    <p>Three-part UIMS architecture: <strong>Presentation</strong> (handles I/O), <strong>Dialogue Control</strong> (manages interaction flow), <strong>Application Interface</strong> (connects to business logic). Introduced the vocabulary of lexical/syntactic/semantic levels of interaction feedback.</p>
+  `},
+  {icon:"🔄",title:"HCI Paradigms — History & Evolution",color:"var(--rose)",body:`
+    <h4>Paradigm Progression Since the 1950s</h4>
+    <div class="table-wrap"><table>
+      <tr><th>Era</th><th>Paradigm</th><th>Key Characteristic</th></tr>
+      <tr><td>1950s–60s</td><td>Batch Processing</td><td>Jobs submitted; no real-time interaction; experts only</td></tr>
+      <tr><td>1960s–70s</td><td>Time-sharing / CLI</td><td>Multiple users; text commands (UNIX); interactive but expert-only</td></tr>
+      <tr><td>1970s–80s</td><td>Desktop / WIMP</td><td>Windows, Icons, Menus, Pointer; Xerox PARC, Apple Mac; mass adoption</td></tr>
+      <tr><td>1980s–90s</td><td>Direct Manipulation</td><td>Drag-and-drop, WYSIWYG; immediate visual feedback; reduced gulf of execution</td></tr>
+      <tr><td>1990s–2000s</td><td>Web / Networked</td><td>Hypertext, browsers; interaction distributed over internet</td></tr>
+      <tr><td>2000s–2010s</td><td>Mobile & Touch</td><td>Gesture-based; always-on; location-aware; context-sensitive</td></tr>
+      <tr><td>Now</td><td>AI / XR / BCI</td><td>Natural language, AR/VR, voice assistants, neural interfaces</td></tr>
+    </table></div>
+    <h4>How Paradigm Shifts Affect Design</h4>
+    <p>Each paradigm shift changes <strong>user expectations</strong>. Users trained on touch expect gesture-based navigation everywhere. Designers must unlearn old assumptions. A paradigm shift is not just a new technology — it fundamentally changes the <strong>task-artifact cycle</strong>: systems change how users work, which creates new user needs, which drives new design.</p>
+    <h4>Current Emerging Paradigm</h4>
+    <p><strong>AI-driven interfaces</strong> — users no longer navigate menus but converse naturally (ChatGPT, Copilot). <strong>XR (AR/VR)</strong> blurs the digital/physical boundary. <strong>Brain-Computer Interfaces (BCI)</strong> promise direct neural control, eliminating the motor action layer entirely.</p>
+  `},
+  {icon:"📐",title:"Design Rules — Principles, Standards & Guidelines",color:"var(--gold)",body:`
+    <h4>The Hierarchy of Design Rules</h4>
+    <p>Design rules exist on a spectrum: <strong>Standards</strong> have high authority but limited application. <strong>Guidelines</strong> have lower authority but broader application. <strong>Principles</strong> are the most general (applicable everywhere) but have the least authority.</p>
+    <h4>Shneiderman's 8 Golden Rules</h4>
+    <p>1. <strong>Strive for consistency</strong> — same actions, same results in similar situations<br/>
+    2. <strong>Enable shortcuts for frequent users</strong> — keyboard shortcuts, macros, abbreviations<br/>
+    3. <strong>Offer informative feedback</strong> — every action should produce a visible response<br/>
+    4. <strong>Design dialogs for closure</strong> — group sequences with clear beginning, middle, end<br/>
+    5. <strong>Offer error prevention and simple error handling</strong> — prevent errors first; make recovery easy<br/>
+    6. <strong>Permit easy reversal of actions</strong> — Ctrl+Z, undo; reduces fear of exploration<br/>
+    7. <strong>Support internal locus of control</strong> — user feels in control, not directed by the system<br/>
+    8. <strong>Reduce short-term memory load</strong> — don't ask users to remember things across screens</p>
+    <h4>Norman's 7 Principles</h4>
+    <p>1. Use knowledge in the world AND in the head &nbsp;2. Simplify task structure &nbsp;3. Make things visible (bridge the gulfs) &nbsp;4. Get the mappings right &nbsp;5. Exploit constraints &nbsp;6. Design for error &nbsp;7. Standardize when all else fails.</p>
+    <h4>Nielsen's Heuristics (Key ones)</h4>
+    <p>System behaviour is predictable, consistent, provides feedback. Heuristic evaluation 'debugs' design by having experts check whether any heuristics are violated.</p>
+    <h4>Design Patterns</h4>
+    <p>An invariant solution to a recurrent problem within a specific context. Originated with Christopher Alexander in architecture. HCI examples: "Go back to safe place," "Light on two sides of every room." Patterns are linked in <strong>pattern languages</strong> that enable complete designs to be generated.</p>
+  `},
+  {icon:"⚙️",title:"HCI in the Software Process",color:"var(--blue)",body:`
+    <h4>Software Lifecycle & HCI</h4>
+    <p>The standard waterfall lifecycle has six stages: Requirements Specification → Architectural Design → Detailed Design → Coding & Unit Testing → Integration & Testing → Operation & Maintenance. In HCI, <strong>this model cannot be linear</strong> — constant feedback loops are required at every stage. Usability must be considered at all stages, not as an isolated activity.</p>
+    <h4>Usability Engineering</h4>
+    <p>Makes specific usability measures <strong>explicit as requirements</strong>. Each attribute is defined with: usability attribute/principle, measuring concept, measuring method, now/worst/planned/best-case levels. Example: Backward Recoverability — planned level: maximum 2 explicit user actions to undo current program.</p>
+    <h4>Iterative Design & Prototyping</h4>
+    <p>Overcomes incomplete requirements. Three prototype types: <strong>Throw-away</strong> (explore options, then discard), <strong>Incremental</strong> (build system in pieces), <strong>Evolutionary</strong> (refine prototype into final system). Warning: <strong>design inertia</strong> — early bad decisions can become embedded through iterations.</p>
+    <h4>Design Rationale</h4>
+    <p>Records <em>why</em> a system is the way it is. Benefits: communication across lifecycle, reuse of design knowledge, enforces design discipline, captures trade-off arguments. Two types: <strong>Process-oriented</strong> (IBIS — preserves deliberation order) and <strong>Structure-oriented</strong> (QOC — post-hoc structuring of alternatives).</p>
+  `},
+  {icon:"🔬",title:"Evaluation Techniques",color:"var(--teal)",body:`
+    <h4>Why Evaluate?</h4>
+    <p>Evaluation: assesses extent of system functionality, assesses effect of interface on user, and identifies specific usability problems. Should occur at all stages of the design lifecycle — in laboratory, field, and in collaboration with users.</p>
+    <h4>Expert-Based Methods</h4>
+    <p><strong>Cognitive Walkthrough</strong> (Polson et al.): Expert walks through design for each task and considers: what impact on user? what cognitive processes required? what learning problems? Focuses on whether the design leads users to generate correct goals. <strong>Heuristic Evaluation</strong> (Nielsen): Experts check design against list of heuristics — predictable, consistent, provides feedback. <strong>Review-based</strong>: Uses literature results to support/refute design parts.</p>
+    <h4>User-Based Methods</h4>
+    <p><strong>Think Aloud</strong>: User narrates thoughts during task. Simple, insightful, but subjective and the act of describing may alter task performance. <strong>Cooperative Evaluation</strong>: Both user and evaluator ask questions — less constrained, user encouraged to criticise. <strong>Post-task walkthrough</strong>: User reacts on recorded action after the event — analyst has time to focus but lacks freshness.</p>
+    <h4>Controlled Experiments</h4>
+    <p><strong>Independent Variable (IV)</strong>: What is manipulated (e.g. interface style). <strong>Dependent Variable (DV)</strong>: What is measured (e.g. time, errors). <strong>Hypothesis</strong>: Prediction framed in IV/DV terms. <strong>Null hypothesis</strong>: states no difference — aim is to disprove it. <strong>Within-groups</strong>: all subjects do all conditions (transfer risk). <strong>Between-groups</strong>: subjects do one condition each (more users needed).</p>
+    <h4>Physiological & Eye Tracking</h4>
+    <p><strong>Eye tracking</strong>: Fixations (number/duration = difficulty), Saccades (rapid jumps), Scan paths (optimal = straight to target). <strong>Physiological</strong>: Heart rate, blood pressure, GSR (Galvanic Skin Response — sweat), EMG (muscle), EEG (brain) — measure emotional response. Hard to interpret, more research needed.</p>
+    <h4>Data Collection Methods</h4>
+    <p><strong>Paper & pencil</strong> (limited to writing speed), <strong>audio</strong> (good for think aloud), <strong>video</strong> (accurate, obtrusive), <strong>computer logging</strong> (automatic, large data hard to analyse), <strong>user notebooks</strong> (subjective, useful for longitudinal studies), <strong>interviews</strong> (flexible, time-consuming), <strong>questionnaires</strong> (fast, less flexible).</p>
+  `},
+  {icon:"🌐",title:"Multimodal Interaction & Universal Design",color:"var(--rose)",body:`
+    <h4>Multimodal vs. Multimedia</h4>
+    <p><strong>Multimodal</strong>: Uses more than one <em>sense/mode</em> of interaction (e.g. visual + auditory). <strong>Multimedia</strong>: Uses different <em>media</em> to communicate information (video, animation, text, images) — these may all use the same mode (visual). We can use sight, sound, touch. We cannot yet effectively use taste or smell.</p>
+    <h4>Speech Recognition</h4>
+    <p>Speech is complex: different people speak differently (accent, stress, idiom), background noise interferes, prosody carries meaning. Speech recognition works well for <strong>single users / limited vocabulary</strong> (dictation) and <strong>open use / limited vocabulary</strong> (phone systems). General user / wide vocabulary remains a challenge.</p>
+    <h4>Non-Speech Sound (Earcons & Auditory Icons)</h4>
+    <p><strong>Auditory icons</strong>: Natural sounds mapped to interface objects (e.g. paper sound for folders, smashing glass for deletion). <strong>Earcons</strong>: Synthetic structured combinations of notes (motives) representing actions. Harder to learn but compositionally powerful — can create hierarchies using family earcons.</p>
+    <h4>Haptic Interaction</h4>
+    <p><strong>Cutaneous perception</strong>: tactile sensation, vibrations on skin. <strong>Kinesthetics</strong>: movement, position, force feedback. Technologies: electronic Braille displays, force feedback devices (Phantom). Conveys shape, texture, resistance, temperature.</p>
+    <h4>Universal Design — 7 Principles</h4>
+    <p>1. <strong>Equitable use</strong> 2. <strong>Flexibility in use</strong> 3. <strong>Simple and intuitive</strong> 4. <strong>Perceptible information</strong> 5. <strong>Tolerance for error</strong> 6. <strong>Low physical effort</strong> 7. <strong>Size and space</strong> for approach and use.</p>
+    <h4>Accessibility</h4>
+    <p>Visual impairment → screen readers, SonicFinder. Hearing impairment → text communication, gesture, captions. Physical impairment → speech I/O, eyegaze, predictive systems. Speech impairment → speech synthesis, text. Dyslexia → speech I/O. Age differences, cultural differences all affect interface interpretation.</p>
+  `},
+  {icon:"❓",title:"User Support Systems",color:"var(--gold)",body:`
+    <h4>Types of User Support</h4>
+    <p>Quick reference, task-specific help, full explanation, tutorial. Provided by: <strong>help</strong> (problem-oriented and specific) and <strong>documentation</strong> (system-oriented and general). Same design principles apply to both.</p>
+    <h4>Qualities of Good Help</h4>
+    <p><strong>Availability</strong> (concurrent with main app), <strong>Accuracy & Completeness</strong>, <strong>Consistency</strong> (between help sections and paper docs), <strong>Robustness</strong> (correct error handling), <strong>Flexibility</strong> (adaptable to experience level), <strong>Unobtrusiveness</strong> (doesn't interrupt work).</p>
+    <h4>Types of Help Systems</h4>
+    <p><strong>Command assistance</strong> (UNIX man, DOS help): Good for quick reference, assumes user knows what to search. <strong>Context-sensitive help</strong> (tooltips): Interpreted based on current context. <strong>Wizards</strong>: Step-by-step guided task execution — useful for complex/infrequent tasks, must allow going back. <strong>Assistants</strong>: Monitor behaviour and offer contextual advice — can be irritating (MS Clippy), must be under user control. <strong>Online tutorials</strong>: Work through basics in test environment. <strong>Online documentation</strong>: Paper docs on screen; hard to browse without hypertext.</p>
+    <h4>Intelligent Help — User Modelling</h4>
+    <p>Three approaches: <strong>Quantification</strong> (user moves between expertise levels based on measurements), <strong>Stereotypes</strong> (user classified into category — novice/expert), <strong>Overlay</strong> (idealised expert model constructed; actual use compared to it). The system must also model <strong>tasks</strong> and choose an appropriate <strong>advisory strategy</strong> (reminder, tutorial, demonstration, etc.).</p>
+  `},
+];
+
+function initTopics(){
+  const list=document.getElementById('topicList');
+  TOPICS.forEach((t,i)=>{
+    const div=document.createElement('div');
+    div.className='topic-item';
+    div.innerHTML=`
+      <div class="topic-header" onclick="toggleTopic(this)">
+        <div class="topic-icon">${t.icon}</div>
+        <div class="topic-title">${t.title}</div>
+        <div class="topic-chevron">▾</div>
+      </div>
+      <div class="topic-body">${t.body}</div>`;
+    list.appendChild(div);
+  });
+}
+function toggleTopic(el){
+  const item=el.parentElement;
+  item.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════
+   FLASHCARDS DATA
+═══════════════════════════════════════════ */
+const FCARDS=[
+  {cat:"Human",q:"What is Fitts' Law and what does it mean for design?",a:"Mt = a + b·log₂(D/S + 1). Movement time increases with distance and decreases with target size. Design implication: make targets LARGE and place them CLOSE. Screen edges count as infinitely large (why macOS menu bar is at screen top)."},
+  {cat:"Human",q:"What are the capacity and decay of Short-Term Memory?",a:"Capacity: 7 ± 2 chunks (Miller's Law). Rapid access ~70ms. Rapid decay ~200ms. Never ask users to hold more than ~7 items in mind simultaneously. Chunking helps — phone numbers are grouped for this reason."},
+  {cat:"Human",q:"What is the difference between Episodic and Semantic LTM?",a:"Episodic = serial memory of life events (what happened when). Semantic = structured memory of facts, concepts, skills — what you 'know'. Semantic LTM is derived from episodic LTM over time through rehearsal and repetition."},
+  {cat:"Human",q:"What is the difference between a Slip and a Mistake?",a:"Slip = right intention, wrong execution (e.g. habit, inattention, poor motor skill). Mistake = wrong intention caused by an incorrect mental model of the system. Slips are execution failures; mistakes are planning failures."},
+  {cat:"Human",q:"What are the three types of reasoning in HCI?",a:"Deduction (logically necessary conclusion from premises — valid but not always factually true), Induction (generalise from seen to unseen cases — unreliable but useful), Abduction (event → most likely cause — unreliable, can produce false explanations)."},
+  {cat:"Human",q:"What does affect mean in HCI and why does it matter?",a:"Affect = biological/emotional response to stimuli. Positive affect → creative problem solving, more forgiving of flaws. Negative affect → narrow thinking, harder even to do easy tasks. Aesthetic, rewarding interfaces increase positive affect and improve performance."},
+  {cat:"Human",q:"What are the three types of sensory memory?",a:"Iconic (visual) — e.g. sparkler trail. Echoic (auditory) — e.g. stereo perception. Haptic (tactile). All are ultra-short buffers, continuously overwritten. They feed input into STM."},
+  {cat:"Human",q:"What reaction time differences exist between senses?",a:"Visual ~200ms. Auditory ~150ms. Pain ~700ms. Auditory is fastest — important for time-critical alerts. Increasing reaction time decreases accuracy in unskilled operators but NOT in skilled operators."},
+  {cat:"Human",q:"Why should blue never be used for small important details?",a:"Because blue acuity is the lowest of all colours — the eye resolves blue with less precision than red or green. Small blue text or fine blue details are harder to perceive, especially for older users or those with colour deficiencies."},
+  {cat:"Human",q:"What are Production Rules in cognitive modelling?",a:"Condition/Action pairs representing procedural knowledge. IF condition is met THEN perform action. Example: IF dog is growling THEN run away. Used in cognitive architectures like ACT-R to model human skill acquisition."},
+  {cat:"Design Principles",q:"What are the three main usability principles and their sub-principles?",a:"Learnability (Predictability, Synthesizability, Familiarity, Generalizability, Consistency). Flexibility (Dialogue Initiative, Multithreading, Task Migratability, Substitutivity, Customizability). Robustness (Observability, Recoverability, Responsiveness, Task Conformance)."},
+  {cat:"Design Principles",q:"What is the difference between Adaptability and Adaptivity?",a:"Both are sub-principles of Customizability (Flexibility). Adaptability = the USER modifies the interface. Adaptivity = the SYSTEM automatically adapts to the user's behaviour over time. Example: a toolbar the user rearranges (adaptability) vs. one that rearranges based on usage frequency (adaptivity)."},
+  {cat:"Design Principles",q:"What is Synthesizability and how does it differ from Predictability?",a:"Predictability = determining the effect of FUTURE actions based on past history. Synthesizability = assessing the effect of PAST actions. Both are sub-principles of Learnability. Together they give users a coherent sense of cause and effect."},
+  {cat:"Design Principles",q:"What is Task Migratability?",a:"Sub-principle of Flexibility. The ability to pass responsibility for task execution between user and system. Example: autocomplete — the system suggests, the user decides whether to accept. The task migrates between parties."},
+  {cat:"Design Principles",q:"What is Recoverability and what does it include?",a:"Sub-principle of Robustness. The ability of the user to take corrective action once an error has been recognised. Includes reachability, forward recovery (skip ahead past error), backward recovery (undo — reverse the error), and commensurate effort (recovery should be proportional to the error)."},
+  {cat:"Design Rules",q:"List Shneiderman's 8 Golden Rules.",a:"1. Strive for consistency 2. Enable shortcuts for frequent users 3. Offer informative feedback 4. Design dialogs for closure 5. Prevent errors, offer simple error handling 6. Permit easy reversal of actions 7. Support internal locus of control 8. Reduce STM load."},
+  {cat:"Design Rules",q:"List Norman's 7 Principles.",a:"1. Use knowledge in world AND head 2. Simplify task structure 3. Make things visible (bridge the gulfs) 4. Get mappings right 5. Exploit constraints (natural and artificial) 6. Design for error 7. Standardize when all else fails."},
+  {cat:"Design Rules",q:"What is ISO 9241 and what does it define?",a:"International standard defining usability as the degree to which a product is used by specific users to achieve specified goals with Effectiveness, Efficiency, and Satisfaction in a specified context of use. It is the backbone of usability engineering."},
+  {cat:"Design Rules",q:"What is a Design Pattern in HCI?",a:"An invariant solution to a recurrent problem within a specific context. Originated with Christopher Alexander in architecture. HCI examples: 'Go back to a safe place', 'Light on two sides of every room'. Patterns are linked into pattern languages enabling complete design generation."},
+  {cat:"Design Rules",q:"What is Heuristic Evaluation?",a:"Proposed by Nielsen and Molich. Usability criteria (heuristics) are identified; design is examined by experts to check if any are violated. Examples: system behaviour is predictable, consistent, feedback is provided. Effectively 'debugs' the design without user testing."},
+  {cat:"HCI Process",q:"What are the three types of prototypes in iterative design?",a:"Throw-away (built to explore options, then discarded — e.g. paper mockups, Wizard of Oz). Incremental (system built in pieces, each delivered). Evolutionary (prototype refined into the final system). Each has different management implications for time, planning, and contracts."},
+  {cat:"HCI Process",q:"What is the Wizard of Oz technique?",a:"A prototyping method where a human operator secretly simulates system responses while users interact with what they believe is an automated system. Used to test interaction concepts before any technology is built. Reveals how users actually want to interact."},
+  {cat:"HCI Process",q:"What are the two types of Design Rationale and their examples?",a:"Process-oriented (IBIS — Issue-Based Information System): preserves deliberation order with Issues, Positions, Arguments. Structure-oriented (QOC — Questions, Options, Criteria): emphasises post-hoc structuring of considered design alternatives."},
+  {cat:"HCI Process",q:"What is Design Inertia in iterative design?",a:"The tendency for early (bad) design decisions to persist through iterative cycles because teams become attached to or dependent on initial choices. The prototype structure constrains later iterations, so bad early decisions can become permanent features."},
+  {cat:"Evaluation",q:"What is the difference between Think Aloud and Cooperative Evaluation?",a:"Think Aloud: user narrates thoughts while performing tasks alone; evaluator observes passively. Cooperative Evaluation: user AND evaluator can ask each other questions throughout; less constrained, user encouraged to criticise, clarification possible."},
+  {cat:"Evaluation",q:"What is the difference between IV and DV in experiments?",a:"Independent Variable (IV) = what the experimenter MANIPULATES (e.g. interface style, font size). Dependent Variable (DV) = what the experimenter MEASURES (e.g. task completion time, error rate). Changes in DV are attributed to the IV."},
+  {cat:"Evaluation",q:"What is a Null Hypothesis?",a:"States there is NO difference between experimental conditions. The aim of the experiment and statistical analysis is to DISPROVE it. Example: 'Font size has no effect on error rate.' If we can disprove it, we can claim font size DOES affect errors."},
+  {cat:"Evaluation",q:"What are the three eye tracking metrics?",a:"Fixations (eye maintains stable position — number and duration indicate level of difficulty). Saccades (rapid eye movement from one point to another). Scan paths (path through content — short fixation straight to target is optimal for good design)."},
+  {cat:"Evaluation",q:"What are the advantages and disadvantages of laboratory vs. field evaluation?",a:"Lab: specialist equipment available, uninterrupted — but lacks context, hard to observe cooperation. Field: natural environment, context retained, longitudinal studies possible — but distractions, noise, difficult to control variables."},
+  {cat:"Evaluation",q:"What is a Cognitive Walkthrough?",a:"Proposed by Polson et al. An expert 'walks through' each task step and asks: What impact will this have on the user? What cognitive processes are required? What learning problems may occur? Focuses on whether design leads to correct goal generation."},
+  {cat:"User Support",q:"What is the difference between Wizards and Assistants in help systems?",a:"Wizards: step-by-step guided task execution using user's answers — constrained but safe. Must allow going back. Assistants: monitor behaviour and offer contextual advice proactively — can be irritating (MS Clippy). Must be under user control (e.g. XP smart tags)."},
+  {cat:"User Support",q:"What are the 7 principles of Universal Design?",a:"1. Equitable use 2. Flexibility in use 3. Simple and intuitive 4. Perceptible information 5. Tolerance for error 6. Low physical effort 7. Size and space for approach and use. Design accessible to ALL people without need for specialised adaptation."},
+  {cat:"User Support",q:"What are the three user modelling approaches in intelligent help?",a:"Quantification (user moves between expertise levels based on measured behaviour). Stereotypes (user classified into category: novice/intermediate/expert). Overlay (idealised expert model constructed; actual use compared to it — model contains commonality or difference)."},
+  {cat:"Implementation",q:"What are the differences between MVC and PAC?",a:"MVC (Model-View-Controller): Model=state, View=rendering, Controller=input. Works well but controller must talk to view — separation incomplete. PAC (Abstraction-Presentation-Control): cleaner concept, manages hierarchies better. Both used in practice; MVC dominates (Java Swing)."},
+  {cat:"Implementation",q:"What are the three software architecture options for windowing?",a:"1. Each application manages all processes (bad portability, synchronisation issues). 2. Management in OS kernel (apps tied to OS). 3. Management as separate application (maximum portability — this is the X Window System model)."},
+  {cat:"Implementation",q:"What is the Seeheim model?",a:"Three-component UIMS architecture: Presentation (I/O handling), Dialogue Control (interaction flow management), Application Interface (connection to business logic). Introduced lexical/syntactic/semantic vocabulary for feedback levels. Conceptually influential even if not directly implemented."},
+  {cat:"Human",q:"What is a 'Chunk' in memory and why does it matter?",a:"A chunk is a meaningful unit of information in STM. STM holds 7±2 chunks regardless of their information density. Experts have larger chunks (chess patterns, programming constructs). Design should help users chunk information — hence grouping, labelling, and consistent structure."},
+  {cat:"Human",q:"What is the Wason Card Problem?",a:"A classic test of inductive reasoning. Cards show E, K, 4, 7. Rule: 'If a card has a vowel on one side, it has an even number on the other.' Most people fail to turn over the 7 (the falsifying card). Demonstrates that humans are poor at using NEGATIVE evidence in inductive reasoning."},
+  {cat:"Design Rules",q:"What is the difference between Standards and Guidelines?",a:"Standards: set by national/international bodies (e.g. ISO), high authority, limited application, slowly changing — hardware more common than software. Guidelines: more suggestive, lower authority, more general application — abstract principles (early lifecycle) and detailed style guides (later lifecycle)."},
+  {cat:"HCI Process",q:"What is Usability Engineering?",a:"The process of making specific usability measures explicit as requirements before design begins. Each usability attribute has: measuring concept, measuring method, and four benchmark levels (now/worst/planned/best). Problem: requires detail that may not be available early in design."},
+  {cat:"Evaluation",q:"What is the problem with CSCW (multi-user) experiments?",a:"More difficult than single-user experiments. Problems: needing large subject groups (more expensive), longer 'settling' time, difficult timetabling, vast variation BETWEEN groups, task choice must encourage cooperation. Solutions: within-groups design, micro-analysis (gaps in speech), anecdotal/qualitative analysis."},
+];
+
+let fcDeck=[...FCARDS];
+let fcIdx=0;
+let fcCatFilter='All';
+
+function initFlashcards(){
+  const cats=['All',...new Set(FCARDS.map(c=>c.cat))];
+  const row=document.getElementById('fcCats');
+  cats.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='flt'+(c==='All'?' on':'');
+    b.textContent=c;
+    b.onclick=()=>{
+      fcCatFilter=c;
+      document.querySelectorAll('#fcCats .flt').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      fcDeck=c==='All'?[...FCARDS]:FCARDS.filter(x=>x.cat===c);
+      fcIdx=0;fcRender();
+    };
+    row.appendChild(b);
+  });
+  fcRender();
+}
+function fcRender(){
+  const c=fcDeck[fcIdx];
+  document.getElementById('fcInner').classList.remove('flipped');
+  document.getElementById('fcTag').textContent=c.cat;
+  document.getElementById('fcQ').textContent=c.q;
+  document.getElementById('fcA').textContent=c.a;
+  document.getElementById('fcCnt').textContent=`${fcIdx+1} / ${fcDeck.length}`;
+  document.getElementById('fcPrev').disabled=fcIdx===0;
+  document.getElementById('fcNext').disabled=fcIdx===fcDeck.length-1;
+  document.getElementById('fcProg').style.width=((fcIdx+1)/fcDeck.length*100)+'%';
+}
+function fcFlip(){document.getElementById('fcInner').classList.toggle('flipped')}
+function fcNav(d){fcIdx=Math.max(0,Math.min(fcDeck.length-1,fcIdx+d));fcRender()}
+function fcShuffle(){
+  for(let i=fcDeck.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fcDeck[i],fcDeck[j]]=[fcDeck[j],fcDeck[i]];}
+  fcIdx=0;fcRender();
+}
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('flash').classList.contains('on')){
+    if(e.key==='ArrowRight')fcNav(1);
+    else if(e.key==='ArrowLeft')fcNav(-1);
+    else if(e.key===' '){e.preventDefault();fcFlip();}
+  }
+});
+
+/* ═══════════════════════════════════════════
+   SOLVED EXAMS DATA
+═══════════════════════════════════════════ */
+const EXAMS=[
+  {
+    year:"2025 Midterm — April 7, 2025",
+    questions:[
+      {
+        n:"Q1",pts:"10",
+        text:"Explain in detail the roles and challenges of the three core components of HCI: THE HUMAN, THE COMPUTER, and THE INTERFACE. Use examples from real-world systems.",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>THE HUMAN</h4>
+          <p>The human is the user whose needs, capabilities, and limitations must drive every design decision. Humans interact with systems through <strong>perception</strong> (mainly vision and hearing), <strong>memory</strong> (STM with only 7±2 chunks, and LTM accessed slowly), <strong>reasoning</strong> (deductive, inductive, abductive — all prone to error), and <strong>motor actions</strong> governed by Fitts' Law. Emotion also matters: positive affect improves even difficult tasks.</p>
+          <p><strong>Challenges:</strong> Humans have limited STM — an overly complex form forces them to forget earlier steps. Colour blindness (8% of males) means colour alone can't convey information. Different users have different abilities, ages, and cultural backgrounds.</p>
+          <p><strong>Example:</strong> In a hospital medication dispensing system, nurses have limited attention under stress (negative affect narrows thinking), so the interface must minimise STM load, use clear visual hierarchy, and prevent errors through confirmation dialogs.</p>
+          <h4>THE COMPUTER</h4>
+          <p>The computer encompasses all input and output devices and the software that drives them. Input devices range from keyboard and mouse to touchscreens, speech recognition, and eye-gaze trackers. Output includes visual displays, sound, and haptic feedback. The software stack — from windowing systems through interaction toolkits to UIMS architectures — determines how flexible and responsive the interface can be.</p>
+          <p><strong>Challenges:</strong> Devices vary enormously (desktop vs. mobile vs. embedded), forcing designers to handle resolution, input modality, and processing power differences. Fitts' Law dictates that targets must be large and close — challenging on small mobile screens.</p>
+          <p><strong>Example:</strong> A desktop banking application and its mobile app must achieve the same functionality but with different interaction paradigms — mouse clicks translate to touch gestures, and menus collapse into hamburger icons.</p>
+          <h4>THE INTERFACE</h4>
+          <p>The interface is the point of contact between human and computer — the space where interaction actually occurs. It must bridge the <strong>gulf of execution</strong> (gap between what users want to do and the available actions) and the <strong>gulf of evaluation</strong> (gap between system state and the user's perception of that state).</p>
+          <p><strong>Challenges:</strong> Users build <em>mental models</em> of how systems work. If the interface fails to reflect the system's actual behaviour, users make mistakes (not slips). Consistency across the interface is critical — inconsistency breaks the mental model.</p>
+          <p><strong>Example:</strong> Windows 11's Settings app partially replacing Control Panel creates inconsistency — users must maintain two mental models for the same type of task (system configuration), increasing cognitive load and errors.</p>
+        `
+      },
+      {
+        n:"Q2",pts:"10",
+        text:"Why is HCI critical in today's digital landscape, and how can a poor interface negatively impact different industries (e.g., healthcare, finance, education)?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>Why HCI is Critical</h4>
+          <p>HCI is critical because software is now embedded in every domain of human activity — healthcare, banking, education, transport, government. A poorly designed interface is not merely inconvenient; it can cause <strong>errors with real-world consequences</strong>, reduce productivity, exclude users, and destroy trust. The goal of HCI is to ensure systems are <strong>effective</strong> (users can achieve their goals), <strong>efficient</strong> (without wasting effort), and <strong>satisfying</strong> (positive user experience) — as defined by ISO 9241.</p>
+          <h4>Healthcare</h4>
+          <p>A poor interface in an electronic health record system can lead to a nurse selecting the wrong patient or wrong dosage. Cognitive overload under time pressure (negative affect) amplifies error rates. Studies have shown that poor EHR design contributes to medication errors — a directly life-threatening consequence of bad HCI.</p>
+          <h4>Finance</h4>
+          <p>In trading platforms, a confusing interface can cause traders to execute wrong orders with millions of dollars at stake. In consumer banking, a poorly designed mobile app increases abandonment rates and exposes users to security errors (e.g., failing to log out correctly). In 2012, a trading firm lost $440 million in 45 minutes partly due to a user interface that allowed accidental order confirmation.</p>
+          <h4>Education</h4>
+          <p>An online learning platform with poor learnability (violating the learnability principle) causes students to spend cognitive effort navigating the interface instead of learning the content. Inaccessible design excludes students with disabilities. Poor feedback design (violating robustness) leaves learners unsure whether they've completed assignments correctly.</p>
+          <h4>Conclusion</h4>
+          <p>HCI is not a cosmetic concern — it is a <strong>safety, productivity, and accessibility</strong> requirement. Every digital system has users, and every user's experience is shaped by the quality of HCI design decisions made at every stage of the software lifecycle.</p>
+        `
+      },
+      {
+        n:"Q3",pts:"10",
+        text:"Reflect on the evolution of HCI paradigms since the 1950s: (a) describe at least four major paradigms, (b) explain how paradigm shifts influence design, (c) what emerging paradigm is reshaping HCI today?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>(a) Major HCI Paradigms</h4>
+          <p><strong>1. Batch Processing (1950s–60s):</strong> Users submitted punched-card jobs; no real-time interaction. Only trained experts operated systems. Design was irrelevant — the machine was the bottleneck, not the interface.</p>
+          <p><strong>2. Time-sharing / Command Line (1960s–70s):</strong> Multiple users interacted via text terminals (UNIX). Interactive but still expert-only. Design began to matter — command naming consistency became important.</p>
+          <p><strong>3. WIMP / Desktop (1970s–80s):</strong> Windows, Icons, Menus, Pointer. Invented at Xerox PARC, popularised by Apple Macintosh. Made computing accessible to non-experts. Metaphor-based design (the 'desktop') was born.</p>
+          <p><strong>4. Direct Manipulation (1980s–90s):</strong> Drag-and-drop, WYSIWYG editing, immediate visual feedback. Reduced the gulf of execution. Users operate directly on visible objects rather than issuing abstract commands.</p>
+          <p><strong>5. Mobile & Touch (2000s–2010s):</strong> Smartphones brought gesture-based, always-on, location-aware, context-sensitive interaction. Fitts' Law applied more stringently due to small targets on touchscreens.</p>
+          <h4>(b) How Paradigm Shifts Influence Design</h4>
+          <p>Each shift changes user expectations and mental models. Users trained on touch interfaces expect gesture-based navigation everywhere — they may swipe a laptop screen expecting a response. Designers must explicitly unlearn old paradigm assumptions. Paradigm shifts also change the <strong>task-artifact cycle</strong>: new tools change how people work, which creates new user needs, which drives further design innovation.</p>
+          <h4>(c) Emerging Paradigm Today</h4>
+          <p>The current emerging paradigm is <strong>AI-mediated interaction</strong>. Users no longer navigate menus to find functions — they describe their intent in natural language and AI interprets it (ChatGPT, Copilot, Siri). Simultaneously, <strong>XR (AR/VR)</strong> blurs the digital/physical boundary — interaction occurs in physical space. <strong>Brain-Computer Interfaces (BCI)</strong> represent the most radical future paradigm, eliminating the motor action layer entirely. These shifts demand HCI researchers reconsider fundamental assumptions about input, feedback, and user agency.</p>
+        `
+      },
+      {
+        n:"Q4",pts:"30",
+        text:"Following the Principles & Sub-principles to support usability, explain whether Windows 11 is following the principles. What would be your suggestions to increase usability?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 30 points</div>
+          <h4>The Three Usability Principles</h4>
+          <p>The three main principles are <strong>Learnability</strong> (ease of initial use), <strong>Flexibility</strong> (multiplicity of ways to interact), and <strong>Robustness</strong> (support for successful goal achievement).</p>
+          <h4>Learnability Analysis — Windows 11</h4>
+          <p><strong>Consistency (✓):</strong> Windows 11 maintains largely consistent keyboard shortcuts (Ctrl+C/V/Z, Alt+Tab, Win+D) across applications and versions. This supports generalizability — knowledge from Windows 10 transfers. <strong>Familiarity (✓/⚠):</strong> The Start menu and taskbar follow familiar patterns, but their redesign (centred taskbar, removed Live Tiles) breaks familiarity for long-time Windows users — violating predictability for this group. <strong>Synthesizability (⚠):</strong> Some system changes (e.g. Windows Update applying changes) happen in the background with delayed or unclear feedback — users cannot assess the effect of past actions.</p>
+          <p><strong>Suggestion:</strong> Maintain an option to restore the classic left-aligned taskbar for expert users (supporting familiarity). Provide clearer progress indicators for background system operations.</p>
+          <h4>Flexibility Analysis — Windows 11</h4>
+          <p><strong>Customizability (✓):</strong> Users can rearrange the taskbar, set custom themes, resize windows. Snap Layouts allow powerful multitasking. <strong>Dialogue Initiative (✓):</strong> Users are generally in control — the system does not force interactions except for mandatory updates. <strong>Multithreading (✓):</strong> Virtual desktops and Snap Layouts support simultaneous task management. <strong>Task Migratability (⚠):</strong> Windows Copilot (AI assistant) offers migratability but is inconsistently integrated — sometimes it takes over tasks the user wants to control manually.</p>
+          <p><strong>Suggestion:</strong> Make Snap Layouts more discoverable (more visible affordances). Give users full control over when AI assistance activates — respecting user pre-emptiveness.</p>
+          <h4>Robustness Analysis — Windows 11</h4>
+          <p><strong>Recoverability (✓):</strong> Ctrl+Z undo, Recycle Bin, System Restore, and Version History provide multiple recovery layers. <strong>Observability (⚠):</strong> The Settings app vs. legacy Control Panel creates two overlapping systems — users cannot always observe which part of the system they are in or where a setting truly 'lives'. <strong>Task Conformance (✓):</strong> Windows 11 covers essentially all user tasks through its application ecosystem.</p>
+          <p><strong>Suggestion:</strong> <strong>Fully merge Settings and Control Panel</strong> — eliminate the dual-system inconsistency. This is the single biggest robustness improvement possible. Also improve notification clarity so users understand the system state at a glance.</p>
+          <h4>Overall Assessment</h4>
+          <p>Windows 11 performs well on Flexibility and Recoverability but struggles with Consistency (Settings/Control Panel split), Familiarity for power users (taskbar redesign), and Synthesizability for background operations. The overall design philosophy is sound but execution creates unnecessary cognitive friction at the learnability and observability levels.</p>
+        `
+      },
+      {
+        n:"Q5",pts:"20",
+        text:"Why is human-centered design the backbone of modern software development?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 20 points</div>
+          <h4>Definition of Human-Centered Design</h4>
+          <p>Human-Centered Design (HCD) places the user's needs, capabilities, context, and limitations at the center of every design decision, throughout every stage of the software development lifecycle.</p>
+          <h4>Why HCD is the Backbone</h4>
+          <p><strong>1. Software must be used to have value.</strong> A technically perfect system that users cannot operate effectively has zero value. Usability is not a feature — it is a prerequisite. ISO 9241 defines usability as effectiveness, efficiency, and satisfaction: all three are human-centred metrics.</p>
+          <p><strong>2. The task-artifact cycle.</strong> Systems change how users work, and new ways of working create new user needs, which drive new design. HCD makes this cycle explicit — designers must continuously study users in context to stay relevant to evolving needs.</p>
+          <p><strong>3. Early investment prevents costly late-stage failures.</strong> Fixing a usability problem at the requirements stage costs dramatically less than fixing it after deployment. HCD through iterative prototyping and usability testing catches problems early.</p>
+          <p><strong>4. Inclusivity and market reach.</strong> HCD requires designing for the full range of users — different ages, abilities, cultures, languages. Universal design principles expand the addressable market and fulfil ethical and legal accessibility obligations.</p>
+          <p><strong>5. Competitive differentiation.</strong> In mature software markets, functionality is table stakes. User experience — a human-centred outcome — is the primary differentiator. Apple's market dominance is substantially built on HCD investment in interface design.</p>
+          <h4>Conclusion</h4>
+          <p>Modern software development frameworks (Agile, Design Thinking, Lean UX) all explicitly incorporate human-centred practices: user stories, personas, usability testing, iterative refinement. HCD is not an optional add-on but the organising principle that makes software worth building.</p>
+        `
+      },
+      {
+        n:"Q6",pts:"20",
+        text:"What are the interaction design basics? (a) Outline the design lifecycle, (b) describe three levels of navigation design, (c) explain personas and scenarios, (d) what is the core message when designing? (e) list five principles of effective screen design.",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 20 points</div>
+          <h4>(a) The Design Lifecycle</h4>
+          <p>The software design lifecycle comprises: <strong>Requirements Specification</strong> (capturing what the system must do — both functional and non-functional usability requirements), <strong>Architectural Design</strong> (high-level component structure), <strong>Detailed Design</strong> (module-level refinement), <strong>Coding & Unit Testing</strong>, <strong>Integration & Testing</strong>, and <strong>Operation & Maintenance</strong>. In HCI, this is NOT linear — constant feedback loops are required. Usability must be considered at every stage, and iterative prototyping (throw-away, incremental, evolutionary) replaces the waterfall assumption.</p>
+          <h4>(b) Three Levels of Navigation Design</h4>
+          <p><strong>Global navigation</strong> — movement between the major top-level sections of a system (e.g. the main menu bar or bottom tab bar). Users must always be able to reach any major area from any other. <strong>Local navigation</strong> — movement within a section or module (e.g. sub-menus, breadcrumbs within a category). <strong>Contextual navigation</strong> — links specific to current page content (e.g. 'related articles', inline hyperlinks, 'see also' panels). These affect user performance differently: poor global navigation causes users to feel lost; poor local navigation causes them to get stuck; poor contextual navigation prevents discovery.</p>
+          <h4>(c) Personas and Scenarios</h4>
+          <p>A <strong>persona</strong> is a fictional but research-grounded character representing a key user group. It gives designers a concrete human to design for instead of an abstract 'average user'. Example: 'Marija, 45, senior nurse, uses medical software on a tablet during ward rounds, has 20 years of Excel experience but dislikes learning new apps under time pressure.' A <strong>scenario</strong> is a narrative description of a persona using the system to accomplish a specific goal, revealing whether the design supports real-world task completion. Together they anchor the task-artifact cycle and expose design assumptions.</p>
+          <h4>(d) The Core Message When Designing</h4>
+          <p>Design for the <strong>user</strong>, not for the technology. The central goal is maximum usability: the system must be effective (can users achieve their goals?), efficient (without wasting effort?), and satisfying (do they enjoy using it?). Positive affect — created by aesthetically pleasing and rewarding interfaces — improves user performance even on difficult tasks. Every design decision should be evaluated through the lens of its effect on the human user.</p>
+          <h4>(e) Five Principles of Effective Screen Design</h4>
+          <p><strong>1. Consistency</strong> — same visual language, terminology and behaviour throughout. <strong>2. Visual hierarchy</strong> — important elements stand out through size, weight, position, and contrast. <strong>3. Proximity</strong> — related items are grouped together; unrelated items are separated. <strong>4. Alignment</strong> — elements align to invisible grid lines, creating visual order and reducing cognitive effort. <strong>5. Feedback</strong> — every user action produces an immediate visible/audible/haptic response confirming what happened. Additional principle: <strong>White space</strong> — breathing room reduces clutter and improves readability. Never use blue for small critical details (lowest acuity).</p>
+        `
+      }
+    ]
+  },
+  {
+    year:"2024 Midterm — April 15, 2024",
+    questions:[
+      {
+        n:"Q1",pts:"10",
+        text:"Describe briefly what we mean by THE HUMAN, THE COMPUTER and THE INTERFACE.",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>THE HUMAN</h4>
+          <p>The human is the user of the interactive system. Humans bring perception (vision, hearing, touch), memory (sensory, STM with 7±2 chunks, LTM), reasoning (deductive, inductive, abductive), and motor capabilities to the interaction. Crucially, humans have cognitive limitations — finite STM, prone to slips and mistakes — and emotional responses that affect performance. Each person is different in abilities, knowledge, and context.</p>
+          <h4>THE COMPUTER</h4>
+          <p>The computer encompasses all hardware input/output devices (keyboard, mouse, touchscreen, display, speakers) and the software stack driving them (windowing systems, toolkits, UIMS). It is the technological side of the interaction. Capabilities include processing speed, resolution, modality, and the ability to give immediate feedback. Reaction times and Fitts' Law describe fundamental timing constraints.</p>
+          <h4>THE INTERFACE</h4>
+          <p>The interface is where human and computer meet — the interaction point. It must bridge the <strong>gulf of execution</strong> (between what users want and available actions) and the <strong>gulf of evaluation</strong> (between system state and user's perception of that state). Good interface design translates user intention into system action and system responses back into user understanding, building correct mental models.</p>
+        `
+      },
+      {
+        n:"Q2",pts:"10",
+        text:"Why is the main aim of the HCI course important, and where should/is it used?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>Main Aim of HCI</h4>
+          <p>The main aim of HCI is to ensure that interactive systems are designed to be <strong>usable</strong> — effective (users can achieve their goals), efficient (without wasting effort), and satisfying (enjoyable). It does this by applying knowledge of human psychology, cognition, and physical capabilities to the design of computer systems and interfaces.</p>
+          <h4>Importance</h4>
+          <p>As software permeates every domain of life, poor usability has real consequences: in healthcare it can cause fatal medication errors; in finance it can cause costly trading mistakes; in education it can prevent learning. Good HCI is also an economic imperative — poor UX drives users to competitors. Positive affect from good design improves productivity and wellbeing.</p>
+          <h4>Where It Is Used</h4>
+          <p>HCI principles apply at <strong>every stage</strong> of the software development lifecycle, not as a single isolated activity. During requirements (usability engineering — making usability measurable), during design (applying principles, prototyping), during implementation (using toolkits, UIMS architectures), during testing (cognitive walkthroughs, heuristic evaluation, user testing), and during maintenance (iterative improvement based on field evaluation). Wherever there is a human using a computer, HCI is relevant.</p>
+        `
+      },
+      {
+        n:"Q3",pts:"10",
+        text:"Describe briefly: (a) What are the paradigms we have seen starting from 1950s? (b) Is a paradigm shift affecting the end-product being developed? (c) According to you, what is the paradigm shift that is now happening?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 10 points</div>
+          <h4>(a) Paradigms Since the 1950s</h4>
+          <p><strong>Batch Processing</strong> (1950s–60s): Jobs submitted on cards; no real-time interaction; experts only. <strong>Time-sharing / Command Line</strong> (1960s–70s): Multiple users via text terminals; interactive but expert-only. <strong>WIMP / Desktop</strong> (1970s–80s): Windows, Icons, Menus, Pointer; Xerox PARC and Apple Mac; mass-market computing. <strong>Direct Manipulation</strong> (1980s–90s): Drag-and-drop, WYSIWYG; immediate visual feedback. <strong>Web Interaction</strong> (1990s–2000s): Hypertext browsers; networked interaction. <strong>Mobile & Touch</strong> (2000s–2010s): Gesture-based; always-on; location-aware. <strong>AI / XR</strong> (2010s–now): Natural language; augmented/virtual reality; ubiquitous computing.</p>
+          <h4>(b) Does a Paradigm Shift Affect the End-Product?</h4>
+          <p>Yes, profoundly. A paradigm shift changes user expectations, mental models, interaction metaphors, and design constraints. The end-product must be redesigned — not just ported — for a new paradigm. An application designed for desktop WIMP interaction does not simply work well on mobile touch (different target sizes, no hover states, different navigation patterns). The task-artifact cycle means the new paradigm also changes how users work, creating new requirements for the product itself.</p>
+          <h4>(c) Current Paradigm Shift</h4>
+          <p>The paradigm shift happening now is the move from <strong>direct manipulation</strong> and <strong>menu-based navigation</strong> to <strong>AI-mediated natural language interaction</strong>. Instead of clicking through menus to find a function, users describe their intent in natural language and AI systems interpret and execute it. This is visible in GitHub Copilot, ChatGPT, and Windows Copilot. Simultaneously, <strong>XR (AR/VR)</strong> is merging digital and physical interaction spaces, requiring entirely new HCI paradigms for spatial computing.</p>
+        `
+      },
+      {
+        n:"Q4",pts:"30",
+        text:"Following the Principles & Sub-principles to support usability, explain whether the Windows Operating System (latest version) is following the principles. What would be your suggestions to increase usability?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 30 points</div>
+          <p>See the 2025 Q4 answer above — same question, same structure required. Key points to cover:</p>
+          <h4>Learnability</h4>
+          <p>Windows 11 shows strong <strong>consistency</strong> in keyboard shortcuts (Ctrl+C/V/Z) and application behaviours. <strong>Familiarity</strong> is generally maintained from Windows 10, though the centred taskbar and removed live tiles break expectations for power users — violating predictability. The dual Settings/Control Panel system violates <strong>synthesizability</strong> — users cannot assess which changes were made where.</p>
+          <p><strong>Suggestion:</strong> Option to restore classic taskbar position; clear change history log; complete Settings/Control Panel merger.</p>
+          <h4>Flexibility</h4>
+          <p>Strong <strong>customizability</strong> (themes, taskbar, virtual desktops). Snap Layouts improve <strong>multithreading</strong>. <strong>Task migratability</strong> through Copilot AI assistance. However, Snap Layouts are not sufficiently discoverable — they violate familiarity for new users. Mandatory Windows Updates override <strong>dialogue initiative</strong> — the system pre-empts the user.</p>
+          <p><strong>Suggestion:</strong> More visible Snap Layout affordances. Flexible update scheduling that fully respects user schedule.</p>
+          <h4>Robustness</h4>
+          <p>Excellent <strong>recoverability</strong> (Undo, Recycle Bin, System Restore). Good <strong>task conformance</strong> — covers virtually all user tasks. Weakened <strong>observability</strong> due to Settings/Control Panel split and unclear notification system. Some <strong>responsiveness</strong> issues with progress feedback for lengthy background operations.</p>
+          <p><strong>Suggestion:</strong> Consolidate the settings system completely. Improve progress/state visibility for background operations (updates, scans, syncs).</p>
+        `
+      },
+      {
+        n:"Q5",pts:"20",
+        text:"Why is Human Computer Interaction important in software design? Describe with your own words.",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 20 points</div>
+          <p>Human-Computer Interaction is important in software design because it ensures that the software actually works <em>for people</em>, not just as a technical artefact. A system can be architecturally perfect and algorithmically optimal, but if users cannot operate it effectively, it fails its purpose entirely.</p>
+          <p>HCI matters because <strong>humans have limitations</strong>: finite short-term memory (7±2 chunks), reaction times, susceptibility to slips and mistakes, and emotional states that affect performance. Software that ignores these realities creates cognitive overload, errors, and frustration. In safety-critical domains like healthcare or aviation, this directly costs lives.</p>
+          <p>HCI also matters because <strong>software must compete</strong>. In mature markets, functionality is table stakes — user experience is the differentiator. Companies that invest in HCI (Apple, Google) capture and retain users; those that don't lose them.</p>
+          <p>Finally, HCI matters because of <strong>inclusivity</strong>. Good HCI design makes software accessible to people with disabilities, different languages, different ages, and different levels of technical expertise — expanding reach while fulfilling ethical obligations.</p>
+          <p>In short: software without HCI is a machine that humans are expected to adapt to. Software with HCI is a tool that adapts to humans. The difference is the difference between technology that fails and technology that succeeds.</p>
+        `
+      },
+      {
+        n:"Q6",pts:"20",
+        text:"What are the interaction design basics? (a) Describe the process of design, (b) describe the levels of navigation design, (c) what do we mean by persona and scenarios, (d) what is the central message when designing? (e) what are the basic principles of screen design and layout?",
+        body:`
+          <div class="model-badge">✦ MODEL ANSWER — 20 points</div>
+          <p><em>This question is identical in structure to 2025 Q6. Use the same answer framework:</em></p>
+          <p>(a) <strong>Process of design</strong>: The lifecycle (Requirements → Architecture → Detailed Design → Coding → Integration → Operation) with constant feedback loops — not linear. Usability at every stage. Iterative prototyping. (b) <strong>Navigation levels</strong>: Global (between major sections), Local (within a section), Contextual (content-specific links). (c) <strong>Personas</strong>: Research-based fictional user characters. <strong>Scenarios</strong>: Narratives of personas completing tasks — test whether design supports real use. (d) <strong>Central message</strong>: Design for the user, not the technology — maximum usability means effective, efficient, and satisfying. (e) <strong>Screen design principles</strong>: Consistency, Visual hierarchy, Proximity, Alignment, Feedback, White space, Avoid relying on colour alone.</p>
+        `
+      }
+    ]
+  }
+];
+
+let currentExam=0;
+function initExams(){
+  const cont=document.getElementById('examContents');
+  EXAMS.forEach((ex,ei)=>{
+    const d=document.createElement('div');
+    d.className='exam-content'+(ei===0?' on':'');
+    d.id='exam'+ei;
+    let html='';
+    ex.questions.forEach((q,qi)=>{
+      html+=`<div class="q-block" id="eb${ei}_${qi}">
+        <div class="q-head" onclick="toggleQ('eb${ei}_${qi}')">
+          <span class="q-num">${q.n}</span>
+          <span class="q-text">${q.text}</span>
+          <span class="q-pts">${q.pts} pts</span>
+          <span class="q-chev">▾</span>
+        </div>
+        <div class="q-body">${q.body}</div>
+      </div>`;
+    });
+    d.innerHTML=html;
+    cont.appendChild(d);
+  });
+}
+function switchExam(idx,btn){
+  currentExam=idx;
+  document.querySelectorAll('.exam-content').forEach(e=>e.classList.remove('on'));
+  document.getElementById('exam'+idx).classList.add('on');
+  document.querySelectorAll('.etab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+}
+function toggleQ(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+/* ═══════════════════════════════════════════
+   MOCK EXAM DATA
+═══════════════════════════════════════════ */
+const MOCK_QS=[
+  {q:"According to Fitts' Law, which change will reduce movement time the most when targeting a UI element?",opts:["Increase the distance to target","Decrease the size of target","Increase the size of target and decrease the distance","Change the colour of the target"],correct:2,explain:"Fitts' Law: Mt = a + b·log₂(D/S + 1). Smaller D and larger S both reduce Mt. The combination of both has the greatest effect. Colour does not appear in the formula."},
+  {q:"Short-Term Memory (STM) can hold approximately how many chunks of information?",opts:["3 ± 1","7 ± 2","12 ± 3","Unlimited"],correct:1,explain:"Miller's Law: STM capacity is 7 ± 2 chunks. This is why interfaces should avoid requiring users to hold more than ~7 items in mind simultaneously, and why information is chunked (phone numbers, postcodes, etc.)."},
+  {q:"A user accidentally deletes a file because they confused the 'Archive' button with the 'Delete' button due to similar icons placed next to each other. This is an example of a:",opts:["Mistake","Slip","Abductive error","Inductive error"],correct:1,explain:"A slip = right intention, wrong execution. The user intended to archive but executed delete due to a physical/perceptual error (similar icons, adjacent placement). A mistake would be if they had the wrong intention (e.g. they thought archiving deleted the file)."},
+  {q:"Which sub-principle of Learnability refers to the ability to determine the effect of FUTURE actions based on past interaction history?",opts:["Synthesizability","Familiarity","Predictability","Generalizability"],correct:2,explain:"Predictability = determining the effect of future actions based on past history. Synthesizability = assessing the effect of PAST actions. Both are sub-principles of Learnability and together give users a coherent causal model of the system."},
+  {q:"ISO 9241 defines usability as a combination of three attributes. Which option correctly lists all three?",opts:["Learnability, Flexibility, Robustness","Effectiveness, Efficiency, Satisfaction","Consistency, Feedback, Recovery","Reliability, Validity, Accuracy"],correct:1,explain:"ISO 9241: Usability = Effectiveness (can users achieve their goals?), Efficiency (without wasting effort?), Satisfaction (do they enjoy the process?). The other options are either HCI principles (Learnability/Flexibility/Robustness) or research methodology terms."},
+  {q:"In Shneiderman's 8 Golden Rules, which rule directly addresses the limitation of STM in users?",opts:["Strive for consistency","Offer informative feedback","Permit easy reversal of actions","Reduce short-term memory load"],correct:3,explain:"Rule 8 directly maps to cognitive psychology: STM holds 7±2 chunks and decays in ~200ms. Interfaces should minimise the need to remember things across screens, avoid long sequences, and provide reminders of context — all reducing STM demand."},
+  {q:"The Wizard of Oz technique in prototyping involves:",opts:["Building a fully automated AI prototype","A human secretly simulating system responses while users believe it is automated","A magician demonstrating the interface to stakeholders","Running a formal usability test with 10 or more users"],correct:1,explain:"Wizard of Oz: a human operator hidden from the user simulates the system's responses. The user believes they are interacting with a real automated system. Used to test interaction concepts before any working technology exists."},
+  {q:"Design Rationale using QOC (Questions, Options, Criteria) is best described as:",opts:["Process-oriented, preserving deliberation order","Structure-oriented, post-hoc structuring of design alternatives","A prototyping technique for iterative design","A standard set by ISO for interface documentation"],correct:1,explain:"QOC is structure-oriented (like DRL). It emphasises post-hoc structuring of considered alternatives. IBIS is the process-oriented approach that preserves the order of deliberation. Both are types of Design Rationale."},
+  {q:"A user opens System Settings in Windows 11 to change the date format but finds themselves redirected to the classic Control Panel. Which usability principle is primarily being violated?",opts:["Recoverability","Consistency","Task Migratability","Responsiveness"],correct:1,explain:"Having two separate systems (Settings and Control Panel) for the same category of task violates Consistency — the most fundamental learnability sub-principle. Users must maintain two different mental models for effectively the same type of operation."},
+  {q:"In a controlled experiment comparing two interface designs, the researcher measures 'time to complete a task'. This measurement is the:",opts:["Independent Variable","Null Hypothesis","Dependent Variable","Control Variable"],correct:2,explain:"The Dependent Variable (DV) is what the researcher measures. The Independent Variable (IV) is what is manipulated (in this case, interface design type). The null hypothesis would state there is no difference in completion time between the designs."},
+  {q:"Which HCI paradigm was pioneered at Xerox PARC and popularised by Apple that made computing accessible to non-experts?",opts:["Batch Processing","Time-sharing","WIMP/Desktop","Direct Manipulation"],correct:2,explain:"WIMP (Windows, Icons, Menus, Pointer) originated at Xerox PARC in the 1970s and was brought to mass market by Apple Macintosh in 1984. This paradigm replaced the command line interface with visual metaphors, making computers accessible to non-experts for the first time."},
+  {q:"Eye tracking measurements showing long fixation durations on a particular interface element most likely indicate:",opts:["The element is aesthetically pleasing","The user is highly interested in the content","The element is cognitively difficult to process or understand","The user is an expert performing optimal scan paths"],correct:2,explain:"In eye tracking analysis, number and DURATION of fixations indicate DIFFICULTY with a display — the cognitive effort required to process what is shown. Short fixations and efficient scan paths characterise expert users and well-designed interfaces. Long fixations = the user is struggling."},
+  {q:"Which of the following best describes 'Inductive Reasoning'?",opts:["Deriving a logically necessary conclusion from given premises","Reasoning from an event back to its most likely cause","Generalising from observed cases to predict unobserved cases","Using rules of logic to determine if a statement is true"],correct:2,explain:"Inductive reasoning = generalising from cases seen to cases unseen. e.g. 'All elephants I've seen have trunks, therefore all elephants have trunks.' It is unreliable (can only prove false, not true) but extremely useful. Abduction = event to cause. Deduction = premises to logical conclusion."},
+  {q:"In the context of User Support, what is the key difference between a Wizard and an Assistant?",opts:["Wizards work online; Assistants work offline","Wizards proactively monitor behaviour; Assistants guide step-by-step","Wizards guide step-by-step through a specific task; Assistants proactively offer contextual advice","Wizards are for novice users only; Assistants are for experts"],correct:2,explain:"Wizards = structured step-by-step guidance for a specific task (must allow going back, constrained flexibility). Assistants = proactively monitor user behaviour and offer contextual advice based on what the user is doing (can be irritating — MS Clippy — must be under user control)."},
+  {q:"The Galvanic Skin Response (GSR) is used in HCI evaluation to measure:",opts:["Eye movement patterns during reading","User's emotional/physiological response to an interface","The number of errors made per minute","Speech recognition accuracy"],correct:1,explain:"GSR measures sweat gland activity, which changes with emotional arousal. It is a physiological measure used alongside heart rate, EMG (muscle activity), and EEG (brain activity) to determine a user's emotional/stress response to interacting with an interface."},
+  {q:"Which of the following is an example of a 'Throw-away prototype'?",opts:["A prototype that gradually evolves into the final product","A paper mockup used to explore design options before any code is written","An incremental build where each component is delivered separately","A beta version released to early adopters"],correct:1,explain:"Throw-away prototype = built to explore and clarify design options, then discarded. Examples: paper sketches, storyboards, Wizard of Oz simulations. Purpose is to learn, not to build. Evolutionary = prototype becomes the product. Incremental = system built in deliverable pieces."},
+  {q:"The principle that allows equivalent values of input or output to be substituted for each other is called:",opts:["Multithreading","Substitutivity","Task Migratability","Generalizability"],correct:1,explain:"Substitutivity = sub-principle of Flexibility. Allowing equivalent values of input and output to be substituted. Example: accepting a date as '7 April 2025', '07/04/2025', or 'April 7th' — all equivalent inputs accepted. Representation multiplicity and equal opportunity."},
+  {q:"Norman's principle 'Get the mappings right' refers to:",opts:["Ensuring file paths are correctly mapped in the OS","The relationship between controls and their effects should be natural and direct","Mapping user requirements to system features during design","Using consistent colour mappings across the interface"],correct:1,explain:"Mappings = the relationship between controls and their effects. A natural mapping means the control's position, direction, or form intuitively corresponds to its effect. Classic example: a row of stove controls matching the row of burners. Poor mapping forces users to memorise arbitrary relationships."},
+  {q:"In the PAC (Presentation-Abstraction-Control) architecture, what does the 'Abstraction' component represent?",opts:["The visual rendering of the interface on screen","The logical state and data of the component","The module that processes and routes user input","The mechanism for communicating between components"],correct:1,explain:"In PAC: Abstraction = the component's logical state and data (equivalent to Model in MVC). Presentation = manages input and output (what the user sees and interacts with). Control = mediates between Abstraction and Presentation. PAC manages hierarchies better than MVC."},
+  {q:"The 'Cocktail Party Phenomenon' demonstrates which principle about human hearing?",opts:["Humans can hear frequencies up to 20kHz","The auditory system can selectively attend to one voice among background noise","Human reaction time to auditory stimuli is ~150ms","Hearing accuracy decreases at high frequencies"],correct:1,explain:"The cocktail party phenomenon shows that the auditory system actively filters and selectively attends to specific sounds (like your own name) even in noisy environments. This has implications for the use of audio alerts in interfaces — important sounds can be picked up even in noisy workplaces."},
+  {q:"Which evaluation method involves the user and evaluator BOTH being able to ask each other questions during the session?",opts:["Think Aloud","Heuristic Evaluation","Cooperative Evaluation","Post-task Walkthrough"],correct:2,explain:"Cooperative Evaluation is a variation of Think Aloud where both user and evaluator can ask questions throughout. This makes it less constrained and more natural. The user is explicitly encouraged to criticise the system, and the evaluator can ask for clarification immediately."},
+  {q:"'Design Inertia' in iterative design refers to:",opts:["The tendency to spend too long on early iterations","Early bad design decisions persisting and becoming embedded through later iterations","Users resisting changes to familiar interfaces","The momentum gained from having a well-designed prototype"],correct:1,explain:"Design inertia = the tendency for early bad design decisions to become locked in through iterative cycles. Teams become attached to initial choices, the prototype structure constrains later iterations, and changing direction becomes progressively more costly. A key warning when using iterative methods."},
+  {q:"Blue should not be used for small important interface details because:",opts:["Blue is associated with sadness and creates negative affect","Blue is culturally inappropriate in many countries","Blue acuity is the lowest of all colours in the human visual system","Blue has the highest wavelength and strains the eyes"],correct:2,explain:"From the lecture on human vision: 'blue acuity is the lowest' — the eye resolves blue with less precision than red or green. This makes small blue details or fine blue text harder to perceive accurately. This is a direct application of human visual psychology to interface design."},
+  {q:"The 'Gulf of Execution' in Norman's model refers to:",opts:["The time lag between user action and system response","The gap between what users want to do and the available actions in the interface","The difference between novice and expert user performance","The distance a user must move the mouse to reach a target"],correct:1,explain:"Norman's two gulfs: Gulf of Execution = gap between user's goal and the actions available in the system (can I do what I want to do?). Gulf of Evaluation = gap between system state and user's ability to perceive and interpret it (can I tell what has happened?). Good design bridges both."},
+  {q:"Which type of experimental design avoids transfer of learning between conditions?",opts:["Within-groups design","Between-groups design","Longitudinal design","Quasi-experimental design"],correct:1,explain:"Between-groups design: each subject performs under only ONE condition. This eliminates transfer of learning (where practice in one condition improves performance in another). Disadvantage: more users required and group variation can bias results. Within-groups: all subjects do all conditions — cheaper but risks transfer."},
+];
+
+let mockState={answers:[],revealed:[],started:false};
+function startMock(){
+  mockState={answers:new Array(MOCK_QS.length).fill(null),revealed:new Array(MOCK_QS.length).fill(false),started:true};
+  document.getElementById('mockIntro').style.display='none';
+  document.getElementById('mockResults').style.display='none';
+  const c=document.getElementById('mockQuestions');
+  c.style.display='block';c.innerHTML='';
+  MOCK_QS.forEach((q,qi)=>{
+    const card=document.createElement('div');
+    card.className='mq-card';card.id='mq'+qi;
+    let optsHtml=q.opts.map((o,oi)=>`
+      <button class="mq-opt" id="opt${qi}_${oi}" onclick="selectOpt(${qi},${oi})">
+        <span class="opt-letter">${'ABCD'[oi]}</span>${o}
+      </button>`).join('');
+    card.innerHTML=`
+      <div class="mq-header">
+        <span class="mq-n">Q${qi+1}</span>
+        <div class="mq-q">${q.q}</div>
+      </div>
+      <div class="mq-opts" id="opts${qi}">${optsHtml}</div>
+      <div class="mq-explain" id="exp${qi}">${q.explain}</div>`;
+    c.appendChild(card);
+  });
+  const acts=document.createElement('div');
+  acts.className='mock-actions';
+  acts.innerHTML=`
+    <button class="btn" onclick="resetMock()">↺ Reset</button>
+    <button class="btn btn-primary" onclick="submitMock()">Submit & See Results →</button>`;
+  c.appendChild(acts);
+}
+function selectOpt(qi,oi){
+  if(mockState.revealed[qi])return;
+  mockState.answers[qi]=oi;
+  mockState.revealed[qi]=true;
+  const correct=MOCK_QS[qi].correct;
+  document.querySelectorAll(`#opts${qi} .mq-opt`).forEach((b,i)=>{
+    b.classList.add('locked');
+    if(i===oi&&i===correct)b.classList.add('correct');
+    else if(i===oi&&i!==correct)b.classList.add('wrong');
+    else if(i===correct)b.classList.add('reveal');
+  });
+  document.getElementById('exp'+qi).classList.add('show');
+}
+function submitMock(){
+  const score=mockState.answers.reduce((s,a,i)=>s+(a===MOCK_QS[i].correct?1:0),0);
+  const pct=Math.round(score/MOCK_QS.length*100);
+  document.getElementById('mockQuestions').style.display='none';
+  const res=document.getElementById('mockResults');
+  res.style.display='block';
+  const emoji=pct>=80?'🏆':pct>=60?'💪':pct>=40?'📚':'🔄';
+  const msg=pct>=80?'Excellent! You are ready for the exam!':pct>=60?'Good work! Review the missed questions.':pct>=40?'Keep studying — focus on the topics you missed.':'Revisit the lectures and try again.';
+  let reviewHtml='<div class="review-list">';
+  MOCK_QS.forEach((q,i)=>{
+    const ans=mockState.answers[i];
+    const ok=ans===q.correct;
+    const selectedText=ans!==null?q.opts[ans]:'Not answered';
+    reviewHtml+=`<div class="review-item"><span class="ri-icon ${ok?'ri-right':'ri-wrong'}">${ok?'✓':'✗'}</span><div><strong>Q${i+1}:</strong> ${q.q}<br/><span style="color:var(--dim);font-size:12px">Your answer: ${selectedText} ${ok?'✓':'→ Correct: '+q.opts[q.correct]}</span></div></div>`;
+  });
+  reviewHtml+='</div>';
+  res.innerHTML=`
+    <div class="results-wrap">
+      <div class="res-ring"><div class="res-pct">${pct}%</div><div class="res-lbl">${score}/${MOCK_QS.length}</div></div>
+      <h2 class="res-title">${emoji} ${msg}</h2>
+      <p class="res-sub">${score} correct out of ${MOCK_QS.length} questions</p>
+      <button class="btn btn-primary" onclick="startMock()" style="margin-bottom:32px">↺ Retake Exam</button>
+      ${reviewHtml}
+    </div>`;
+}
+function resetMock(){
+  document.getElementById('mockQuestions').style.display='none';
+  document.getElementById('mockResults').style.display='none';
+  document.getElementById('mockIntro').style.display='block';
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+initDefs();
+initTopics();
+initFlashcards();
+initExams();
+</script>
+</body>
+</html>
